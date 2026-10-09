@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0d181b">
+<title>Keimspur Station 4B</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=Silkscreen&display=swap">
+<style>
+:root{
+  color-scheme:dark;
+  --ground:#0d181b;      /* Nachtflur */
+  --surface:#132327;     /* Aktenmappe */
+  --surface2:#1a2f34;
+  --line:#2b444a;
+  --ink:#e4ede7;         /* Kasack-Weiß mit Grünstich */
+  --muted:#97aea8;
+  --dispenser:#6ec6e6;   /* Spender-Blau: alles, was man anklicken kann */
+  --isolation:#f2c84b;   /* Isolations-Gelb: Nummern, Belege, Sperren */
+  --uv:#a6f4ff;          /* Schwarzlicht-Spur */
+  --paper:#e9efe6;
+  --paper-ink:#1c2a2d;
+  --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --body:"Atkinson Hyperlegible",Verdana,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+  --pixel:"Silkscreen","IBM Plex Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+html{background:var(--ground)}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55}
+button,select,textarea,input{font:inherit;color:inherit}
+button{cursor:pointer;background:var(--surface2);border:1px solid var(--line);border-radius:3px;padding:9px 13px;transition:background .15s,border-color .15s}
+button:hover:not(:disabled){background:#22404a;border-color:#4d7680}
+button:disabled{cursor:not-allowed;opacity:.45}
+button.primary{background:var(--dispenser);border-color:var(--dispenser);color:#08222c;font-weight:700}
+button.primary:hover:not(:disabled){background:#8fd6ef}
+a{color:var(--dispenser);text-underline-offset:3px}
+:focus-visible{outline:3px solid var(--isolation);outline-offset:3px}
+h1,h2,h3,p{margin:0}
+.eyebrow{font-family:var(--mono);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--isolation);font-weight:500}
+.muted{color:var(--muted)}
+.skip{position:absolute;left:-999px}.skip:focus{left:16px;top:8px;z-index:20;background:var(--ground);padding:8px}
+
+.wrap{max-width:1320px;margin:0 auto;padding-inline:clamp(16px,3vw,32px)}
+
+/* Kopf */
+.top{border-bottom:1px solid var(--line);background:#0b1517}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-block:14px}
+.brand{display:flex;align-items:center;gap:12px;background:none;border:0;padding:0;text-align:left}
+.brand:hover{background:none!important}
+.doorsign{display:grid;place-items:center;width:46px;height:46px;background:var(--paper);color:var(--paper-ink);font-family:var(--display);font-weight:700;font-size:1.5rem;border-radius:2px;box-shadow:3px 3px 0 #000}
+.brand b{display:block;font-family:var(--display);font-weight:700;font-size:1.45rem;letter-spacing:.04em;text-transform:uppercase;line-height:1}
+.brand small{display:block;color:var(--muted);font-size:.82rem;margin-top:3px}
+.tools{display:flex;gap:8px;flex-wrap:wrap}
+
+/* Auftragsleiste */
+.mission{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;padding-block:22px 16px}
+.mission h1{font-family:var(--display);font-weight:600;font-size:clamp(1.9rem,3.6vw,2.8rem);line-height:1.02;letter-spacing:.005em;text-wrap:balance;margin-top:4px}
+.spur{min-width:220px;flex:0 1 300px}
+.spur .count{font-family:var(--mono);font-size:.85rem;color:var(--muted);display:flex;justify-content:space-between;gap:8px}
+.spur .count strong{color:var(--ink);font-variant-numeric:tabular-nums}
+.meter{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;margin-top:8px}
+.meter i{height:10px;background:var(--surface2);border:1px solid var(--line)}
+.meter i.on{background:var(--uv);border-color:var(--uv);box-shadow:0 0 8px rgba(166,244,255,.55)}
+.meter i.gate{border-right:2px solid var(--isolation)}
+
+/* Spielfläche */
+.layout{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,.95fr);gap:22px;align-items:start;padding-bottom:28px}
+@media (max-width:960px){.layout{grid-template-columns:1fr}}
+.map{position:relative;border:1px solid var(--line);background:#081113;box-shadow:0 18px 40px rgba(0,0,0,.35)}
+.map canvas{display:block;width:100%;height:auto;image-rendering:pixelated;image-rendering:crisp-edges}
+.map-bar{display:flex;justify-content:space-between;gap:10px;padding:7px 10px;font-family:var(--mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line);background:#0b1517}
+.map-bar .uvlabel{color:var(--uv)}
+.canvaswrap{position:relative}
+.hotspots{position:absolute;inset:0}
+.hotspot{position:absolute;transform:translate(-50%,-50%);font-family:var(--pixel);font-size:clamp(.58rem,1.15vw,.78rem);letter-spacing:.02em;padding:6px 9px;background:rgba(9,20,23,.88);border:1px solid #5d8088;color:var(--ink);white-space:nowrap;box-shadow:2px 2px 0 #000}
+.hotspot:hover:not(:disabled){background:#0f2a31}
+.hotspot.active{background:var(--dispenser);color:#08222c;border-color:var(--dispenser)}
+.hotspot.locked{border-color:var(--isolation);color:var(--isolation)}
+.hotspot .n{opacity:.7;margin-right:4px}
+
+.roombar{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-top:18px}
+.roombar h2{font-family:var(--display);font-weight:600;font-size:1.6rem;line-height:1.05}
+.badge{font-family:var(--mono);font-size:.78rem;border:1px solid var(--line);padding:4px 8px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.roomdesc{margin-top:6px;max-width:62ch;color:var(--muted)}
+.cases{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-top:14px}
+.case-choice{display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;padding:11px 12px;min-height:92px}
+.case-choice .num{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;color:var(--isolation)}
+.case-choice strong{font-weight:700;line-height:1.25}
+.case-choice small{color:var(--muted);line-height:1.3}
+.case-choice.selected{border-color:var(--dispenser);background:#12323b;box-shadow:inset 3px 0 0 var(--dispenser)}
+.fieldnote{margin-top:14px;font-family:var(--mono);font-size:.82rem;color:var(--muted);border-top:1px dashed var(--line);padding-top:10px}
+
+/* Fallakte */
+.file{position:sticky;top:14px;background:var(--surface);border:1px solid var(--line)}
+@media (max-width:960px){.file{position:static}}
+.file-head{padding:18px 20px 16px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#17292e,#132327)}
+.file-head h2{font-family:var(--display);font-weight:600;font-size:1.9rem;line-height:1.05;margin-top:6px;text-wrap:balance}
+.person{display:flex;align-items:center;gap:10px;margin-top:12px}
+.token{display:grid;place-items:center;width:38px;height:38px;border:1px solid var(--isolation);color:var(--isolation);font-family:var(--mono);font-size:.8rem;font-weight:500}
+.person strong{display:block;line-height:1.2}
+.person span{color:var(--muted);font-size:.9rem}
+.file-body{padding:16px 20px 20px;display:grid;gap:14px}
+.question{font-size:1.02rem;border-left:3px solid var(--isolation);padding-left:12px}
+.steps{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.steps button{text-align:left;font-size:.92rem;line-height:1.25;display:flex;gap:8px;align-items:center}
+.steps button::before{content:"";flex:none;width:9px;height:9px;border:1px solid #6a8e96}
+.steps button.done::before{background:var(--uv);border-color:var(--uv)}
+.steps button.active{border-color:var(--dispenser);background:#12323b}
+.dialogue{min-height:150px;background:#0e1c20;border:1px solid var(--line);padding:14px 15px}
+.dialogue .speaker{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dispenser);margin-bottom:8px}
+.dialogue p{max-width:62ch}
+.dialogue.document{background:var(--paper);color:var(--paper-ink);border-color:#c9d4c8;position:relative}
+.dialogue.document .speaker{color:#7a5a00}
+.dialogue.document p{font-family:var(--mono);font-size:.88rem;line-height:1.6}
+.dialogue.document::after{content:"GESICHERT";position:absolute;right:12px;top:10px;font-family:var(--mono);font-size:.66rem;letter-spacing:.14em;color:#8a6a0a;border:1.5px solid #b08a1c;padding:2px 6px;transform:rotate(4deg)}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+details.help{border-top:1px dashed var(--line);padding-top:10px}
+details.help summary{cursor:pointer;color:var(--dispenser)}
+details.help p{margin-top:8px;color:var(--muted)}
+.foot{font-family:var(--mono);font-size:.78rem;color:var(--muted)}
+
+.pagefoot{border-top:1px solid var(--line)}
+.pagefoot .wrap{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding-block:14px;color:var(--muted);font-size:.88rem}
+.pagefoot .tools{gap:8px}
+
+/* Dialogfenster */
+dialog{width:min(900px,calc(100% - 24px));max-height:88vh;padding:0;background:var(--surface);color:var(--ink);border:1px solid #3d5c63;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+dialog::backdrop{background:rgba(3,8,10,.72)}
+.modal-head{position:sticky;top:0;z-index:2;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 20px;background:#0f1e22;border-bottom:1px solid var(--line)}
+.modal-head h2{font-family:var(--display);font-weight:600;font-size:1.6rem;line-height:1.1}
+.modal-body{padding:18px 20px 24px;display:grid;gap:14px}
+.modal-body p,.modal-body li{max-width:68ch}
+.modal-body ol{margin:0;padding-left:1.3em;display:grid;gap:8px}
+.notice{background:#0e1c20;border:1px solid var(--line);border-left:3px solid var(--isolation);padding:12px 14px}
+.notice strong{display:block;margin-bottom:4px}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap}
+
+/* Hygieneplan */
+.plan{display:grid;grid-template-columns:230px minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:720px){.plan{grid-template-columns:1fr}}
+.plan-index{position:sticky;top:64px;display:grid;gap:5px}
+@media (max-width:720px){.plan-index{position:static;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}}
+.plan-index button{text-align:left;font-size:.82rem;padding:7px 9px;line-height:1.25}
+.plan-index button b{font-family:var(--mono);color:var(--isolation);font-weight:500;margin-right:6px}
+.plan-cards{display:grid;gap:14px}
+.rule-card{border:1px solid var(--line);background:#10201f;padding:16px 18px;scroll-margin-top:70px}
+.rule-card h3{font-family:var(--display);font-weight:600;font-size:1.35rem;line-height:1.1;display:flex;gap:10px;align-items:baseline}
+.rule-card h3 span{font-family:var(--mono);font-size:.8rem;color:var(--isolation);font-weight:500}
+.rule-card .rule{margin-top:10px;display:grid;gap:6px}
+.rule-card .rule p{padding-left:12px;border-left:2px solid var(--dispenser)}
+.rule-card .why,.rule-card .phys{margin-top:10px;color:var(--muted);font-size:.95rem}
+.rule-card .why b,.rule-card .phys b{color:var(--ink)}
+.rule-card .src{margin-top:12px;padding-top:10px;border-top:1px dashed var(--line);font-size:.82rem;color:var(--muted);display:grid;gap:4px}
+
+/* Notizbuch */
+.note-card{border:1px solid var(--line);padding:14px 16px;display:grid;gap:8px;background:#10201f}
+.note-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.note-top h3{font-family:var(--display);font-weight:600;font-size:1.25rem}
+label{font-size:.9rem;color:var(--muted)}
+select,textarea{width:100%;background:#0b1719;border:1px solid var(--line);border-radius:3px;padding:8px 10px}
+textarea{min-height:92px;resize:vertical}
+.check{display:flex;gap:8px;align-items:center;color:var(--ink)}
+.check input{width:18px;height:18px;accent-color:var(--dispenser)}
+.report-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.report-list div{border:1px solid var(--line);padding:8px 10px;font-size:.9rem}
+.report-list small{display:block;color:var(--muted)}
+.stamp{display:inline-block;font-family:var(--mono);font-size:.74rem;letter-spacing:.14em;color:var(--isolation);border:1.5px solid var(--isolation);padding:3px 8px}
+
+.toast{position:fixed;left:50%;bottom:20px;transform:translate(-50%,140%);max-width:calc(100% - 32px);background:var(--paper);color:var(--paper-ink);padding:11px 16px;border-radius:3px;box-shadow:0 10px 30px rgba(0,0,0,.5);transition:transform .25s;z-index:30}
+.toast.show{transform:translate(-50%,0)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+#print-area{display:none}
+@media print{
+  body{background:#fff;color:#000}
+  body>*:not(#print-area){display:none!important}
+  #print-area{display:block;font-family:Arial,sans-serif;font-size:10.5pt;color:#000}
+  #print-area h1{font-size:16pt;margin:0 0 4pt}
+  #print-area .meta{margin:0 0 8pt}
+  #print-area .pc{border:1px solid #444;padding:6pt 8pt;margin:0 0 6pt;break-inside:avoid}
+  #print-area .pc h3{font-size:10.5pt;margin:0 0 4pt}
+  #print-area .ln{border-bottom:1px solid #777;height:15pt}
+  @page{margin:14mm}
+}
+
+</style>
+</head>
+<body>
+<a class="skip" href="#case-panel">Zur aktuellen Fallakte springen</a>
+<header class="top"><div class="wrap">
+ <button class="brand" id="home" aria-label="Zum Personalbereich"><span class="doorsign">4B</span><span><b>Keimspur</b><small>Ermittlungsakte Hygiene · Kreisklinik Mühlenbach</small></span></button>
+ <nav class="tools" aria-label="Ermittlungswerkzeuge"><button id="mission-btn">Auftrag</button><button id="plan-btn">Hygieneplan</button><button id="notes-btn">Notizbuch</button><button id="report-btn" class="primary">Bericht</button></nav>
+</div></header>
+<main class="wrap">
+ <section class="mission">
+  <div><span class="eyebrow">Operation Keimspur · Physiotherapie im Praktikum</span><h1>Zehn Beobachtungen. Nicht jede ist ein Fehler.</h1></div>
+  <div class="spur" aria-label="Gesicherte Belege"><div class="count"><span>Gesicherte Belege</span><strong id="count">0 / 10</strong></div><div class="meter" id="meter"></div></div>
+ </section>
+ <div class="layout">
+  <section aria-label="Station erkunden">
+   <div class="map">
+    <div class="map-bar"><span>Grundriss Station 4B</span><span class="uvlabel" id="iso-label">Isolierbereich</span></div>
+    <div class="canvaswrap"><canvas id="plan-canvas" width="320" height="200" role="img" aria-label="Pixel-Grundriss der Station 4B: Personalbereich oben links, Patientenzimmer oben rechts, Therapieraum unten links, Isolierbereich unten rechts. Leuchtende Punkte markieren noch nicht gesicherte Belege."></canvas><div class="hotspots" id="hotspots"></div></div>
+   </div>
+   <div class="roombar"><div><span class="eyebrow" id="room-tag"></span><h2 id="room-title"></h2></div><span class="badge" id="room-progress"></span></div>
+   <p class="roomdesc" id="room-desc"></p>
+   <div class="cases" id="case-list" aria-label="Fälle in diesem Bereich"></div>
+   <p class="fieldnote" id="field-note" role="status"></p>
+  </section>
+  <aside class="file" id="case-panel" tabindex="-1" aria-label="Aktuelle Fallakte"></aside>
+ </div>
+</main>
+<footer class="pagefoot"><div class="wrap"><span id="save-status">Fortschritt und Notizen bleiben nur in diesem Browser auf diesem Gerät.</span><div class="tools"><button id="print-btn">Berichtsblatt drucken</button><button id="reset-btn">Neu beginnen</button></div></div></footer>
+<dialog id="modal" aria-labelledby="modal-title"><div class="modal-head"><h2 id="modal-title"></h2><button id="close-modal" aria-label="Fenster schließen">✕</button></div><div class="modal-body" id="modal-body"></div></dialog>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div id="print-area"></div>
+
+<script>
+'use strict';
+/* Keimspur · Station 4B
+   Inhalte des Spiels. Bewertungen stehen nicht in dieser Datei. */
+
+const GEPRUEFT = '10.09.2026';
+
+const ROOMS = [
+ {id:'personal', tag:'01', name:'Personalbereich', short:'Personal', x:19, y:41,
+  description:'Umkleide, Spinde, Therapiebüro mit Waschbecken. Hier beginnt jeder Dienst und hier fallen Dinge auf, die man an sich selbst gern übersieht.'},
+ {id:'zimmer', tag:'02', name:'Patientenzimmer 4.12 und 4.14', short:'Zimmer 4.12 / 4.14', x:70, y:41,
+  description:'Zwei Zweibettzimmer der Unfallchirurgie. Mobilisation, manuelle Therapie, Gehtraining: direkt am Bett und mitten in der Patientenumgebung.'},
+ {id:'therapie', tag:'03', name:'Therapieraum 2', short:'Therapieraum', x:24, y:62,
+  description:'Liegen, Barren, Kleingeräte. Viele Patient:innen nacheinander auf denselben Flächen.'},
+ {id:'isolier', tag:'04', name:'Isolierbereich 4.20 und 4.22', short:'Isolierbereich', x:80, y:62,
+  description:'Zwei Einzelzimmer mit Schleuse. Hier gelten zusätzliche Regeln, die über die Basishygiene hinausgehen.'}
+];
+
+const PEOPLE = {
+ jonas:{name:'Jonas Brehm', role:'Physiotherapeut', token:'JB'},
+ lea:{name:'Lea Hartmann', role:'Physiotherapeutin', token:'LH'},
+ mira:{name:'Mira Yıldız', role:'Physiotherapeutin', token:'MY'},
+ samir:{name:'Samir Haddad', role:'Physiotherapeut', token:'SH'},
+ nele:{name:'Nele Brandt', role:'Physiotherapeutin', token:'NB'}
+};
+
+const CASES = [
+ {id:1, room:'personal', who:'jonas', mx:40, my:52, title:'Der glatte Ring', focus:'Schmuck an Händen und Unterarmen',
+  witnessName:'Mira Yıldız', witnessRole:'Physiotherapeutin, Kollegin',
+  statement:'Ich trage nur meinen Ehering und eine Smartwatch. Der Ring ist ganz glatt, da sammelt sich nichts. Die Uhr brauche ich, um bei den Übungen die Zeit zu stoppen.',
+  witness:'Vorhin hat Jonas Frau Kühn aus dem Bett an die Bettkante mobilisiert. Ring und Uhr hatte er dabei an. Ich habe ihn schon mal darauf angesprochen, aber er meint, das sei übertrieben.',
+  evidenceTitle:'B01 · Beobachtungsprotokoll Hygienerundgang',
+  evidence:'07:40 Uhr, Zimmer 4.14. J. Brehm mobilisiert eine Patientin an die Bettkante, direkter Hautkontakt an Unterarm und Rücken. Händedesinfektion vor und nach dem Kontakt durchgeführt. Getragen: glatter Ehering links, Smartwatch mit Silikonarmband am linken Handgelenk. Fingernägel kurz und unlackiert.',
+  confront:'Ich desinfiziere doch jedes Mal. Den Ring drehe ich dabei extra hin und her, damit das Mittel darunter kommt. Das muss reichen.',
+  hint:'Prüfen Sie, ob die Regel zwischen glattem und verziertem Schmuck unterscheidet. Achten Sie auch darauf, bei welchen Tätigkeiten sie gilt.'},
+
+ {id:2, room:'personal', who:'lea', mx:84, my:30, title:'Schnupfen im Dienst', focus:'eigener Atemwegsinfekt',
+  witnessName:'Tim Wolter', witnessRole:'Auszubildender Pflege',
+  statement:'Ich habe seit gestern Schnupfen, aber kein Fieber und fühle mich fit. Deshalb arbeite ich und trage bei allen Behandlungen einen Mund-Nasen-Schutz.',
+  witness:'Mit einer Erkältung gehört man nach Hause. Die steckt doch die Patienten an! Ich finde, sie hätte sich krankmelden müssen.',
+  evidenceTitle:'B02 · Dienstnotiz der Therapieleitung',
+  evidence:'07:00 Uhr. L. Hartmann meldet Schnupfen seit gestern, kein Fieber, kein Krankheitsgefühl. Nach Rücksprache mit der Leitung arbeits- und einsatzfähig. Vereinbart: medizinischer Mund-Nasen-Schutz bei allen Patientenkontakten, Wechsel bei Durchfeuchtung, Händedesinfektion nach dem Naseputzen. Beobachtung 08:30 bis 12:00 Uhr: Vereinbarung durchgehend eingehalten.',
+  confront:'Hätte ich Fieber oder würde ich mich krank fühlen, wäre ich zu Hause geblieben. So habe ich mich mit der Leitung abgesprochen und halte mich daran.',
+  hint:'Unterscheiden Sie zwischen „arbeitsfähig mit leichtem Infekt“ und „krank“. Was sieht der Hygieneplan für Beschäftigte mit Schnupfen vor?'},
+
+ {id:3, room:'personal', who:'mira', mx:108, my:24, title:'Waschen oder desinfizieren?', focus:'Händewaschen zwischen zwei Patientenkontakten',
+  witnessName:'Gerd Kowalski', witnessRole:'Patient, Zimmer 4.14',
+  statement:'Zwischen zwei Patienten desinfiziere ich meine Hände. Ans Waschbecken gehe ich nur, wenn meine Hände sichtbar schmutzig sind oder ich auf der Toilette war.',
+  witness:'Die junge Frau wäscht sich nie die Hände. Die reibt nur dieses Zeug aus der Flasche drauf. Früher hat man sich im Krankenhaus noch richtig mit Seife gewaschen.',
+  evidenceTitle:'B03 · Beobachtungsprotokoll Hygienerundgang',
+  evidence:'09:15 bis 09:50 Uhr, Zimmer 4.14 und Therapiebüro. M. Yıldız behandelt nacheinander zwei Patienten. Vor und nach jedem Patientenkontakt hygienische Händedesinfektion, etwa 3 ml, Einreibezeit etwa 30 Sekunden. Hände vorher trocken und sichtbar sauber. Kein Kontakt mit Körperflüssigkeiten. Keine Händewaschung.',
+  confront:'Wenn ich mir bei zwanzig Patienten am Tag jedes Mal die Hände wasche, ist meine Haut nach einer Woche kaputt. Und gegen die Keime hilft das Desinfektionsmittel sowieso besser.',
+  hint:'Suchen Sie im Hygieneplan, wofür das Händewaschen gedacht ist und was zwischen zwei Patientenkontakten vorgesehen ist.'},
+
+ {id:4, room:'zimmer', who:'jonas', mx:176, my:70, title:'Der Beutel am Ständer', focus:'Mobilisation mit Blasenkatheter',
+  witnessName:'Dieter Albrecht', witnessRole:'Patient, Zimmer 4.12, nach Hüftoperation',
+  statement:'Beim Gehtraining soll nichts über den Boden schleifen. Deshalb habe ich den Urinbeutel oben an den Infusionsständer gehängt, den Herr Albrecht vor sich herschiebt. Vorher habe ich den Beutel geleert.',
+  witness:'Der Beutel hing oben am Ständer, ungefähr auf Höhe meiner Schulter. Der Therapeut hat gesagt, da sei er am sichersten. Beim Laufen hat der Schlauch ein bisschen gezogen.',
+  evidenceTitle:'B04 · Beobachtungsprotokoll Hygienerundgang',
+  evidence:'10:20 Uhr, Flur Station 4B. Gehtraining mit Rollator und mitgeführtem Infusionsständer. Blasenverweilkatheter mit geschlossenem Ableitungssystem, nicht diskonnektiert, Beutel vor dem Gehtraining geleert. Auffangbeutel am Haken des Infusionsständers in etwa 1,40 m Höhe, deutlich oberhalb der Hüfte des stehenden Patienten. Kein Bodenkontakt. Dauer der Einheit: 12 Minuten.',
+  confront:'Unten hätte ich Angst gehabt, dass Herr Albrecht über den Beutel stolpert. Geleert war er ja, und das System war die ganze Zeit geschlossen.',
+  hint:'Der Hygieneplan nennt für den Auffangbeutel mehrere Bedingungen. Prüfen Sie jede einzeln.'},
+
+ {id:5, room:'zimmer', who:'samir', mx:274, my:40, title:'Ohne Handschuhe', focus:'Einmalhandschuhe bei manueller Therapie',
+  witnessName:'Tim Wolter', witnessRole:'Auszubildender Pflege',
+  statement:'Bei der manuellen Therapie an der Schulter von Frau Kühn trage ich keine Handschuhe. Ich muss das Gewebe unter meinen Händen genau spüren.',
+  witness:'Ohne Handschuhe direkt am Patienten? Das habe ich in meinem ersten Einsatz anders gelernt. Mit Handschuhen ist man doch immer auf der sicheren Seite.',
+  evidenceTitle:'B05 · Beobachtungsprotokoll Hygienerundgang',
+  evidence:'11:05 Uhr, Zimmer 4.14. S. Haddad behandelt die rechte Schulter von Frau Kühn manuell. Haut im Behandlungsgebiet intakt, keine Wunde, kein Verband, kein Kontakt mit Blut, Sekreten, Ausscheidungen oder Schleimhäuten. Kein Erregernachweis bei der Patientin bekannt. Hygienische Händedesinfektion unmittelbar vor und nach dem Patientenkontakt.',
+  confront:'Handschuhe hätten Frau Kühn hier nicht besser geschützt. Entscheidend ist die Händedesinfektion davor und danach, und die habe ich gemacht.',
+  hint:'Wann sind Einmalhandschuhe laut Hygieneplan angezeigt und wann nicht? Vergleichen Sie mit der Beschreibung der Haut und dem Erregerstatus.'},
+
+ {id:6, room:'zimmer', who:'nele', mx:222, my:36, title:'Nur kurz Platz gemacht', focus:'Händedesinfektion nach Kontakt mit der Patientenumgebung',
+  witnessName:'Dieter Albrecht', witnessRole:'Patient, Zimmer 4.12',
+  statement:'Ich habe Herrn Albrecht gar nicht angefasst. Ich habe nur das Bettgitter heruntergelassen und den Nachttisch zur Seite geschoben, damit der Rollator Platz hat. Dann bin ich los, den Rollator holen.',
+  witness:'Die Therapeutin hat meinen Nachttisch mit Brille und Wasserglas weggeschoben und ist gleich wieder raus. Draußen hat sie sich den Rollator aus dem Geräteraum geholt.',
+  evidenceTitle:'B06 · Beobachtungsprotokoll Hygienerundgang',
+  evidence:'10:05 Uhr, Zimmer 4.12. N. Brandt betritt das Zimmer nach Händedesinfektion. Senkt das Bettgitter von Herrn Albrecht, schiebt seinen Nachttisch mit Wasserglas, Brille und Telefon zur Seite. Kein direkter Kontakt zum Patienten. Verlässt das Zimmer ohne Händedesinfektion, fasst im Flur den Stationsrollator und die Türklinke des Geräteraums an.',
+  confront:'Händedesinfektion ist doch für den Kontakt mit Patienten gedacht. Ein Bettgitter und ein Nachttisch sind keine Patienten.',
+  hint:'Lesen Sie die fünf Anlässe der Händedesinfektion genau. Wozu gehören Bettgitter und Nachttisch?'},
+
+ {id:7, room:'therapie', who:'samir', mx:40, my:150, title:'Die Liege nach Frau Kühn', focus:'Kontaktflächen der Therapieliege',
+  witnessName:'Ina Lorenz', witnessRole:'Reinigungskraft',
+  statement:'Frau Kühn lag nur zwanzig Minuten auf der Liege. Danach sah alles sauber aus, deshalb habe ich Herrn Fuchs direkt im Anschluss behandelt.',
+  witness:'Ich wische die Liegen abends einmal gründlich. Zwischen den Patienten ist das Therapieteam dran, so steht es auf dem Plan an der Tür.',
+  evidenceTitle:'B07 · Beobachtungsprotokoll Hygienerundgang',
+  evidence:'13:30 Uhr, Therapieraum 2, Liege 1. Frau Kühn liegt 20 Minuten in Rückenlage, Arme und Unterschenkel mit direktem Hautkontakt zur Kunstlederfläche. 13:52 Uhr: Herr Fuchs legt sich auf dieselbe Liege, ebenfalls mit Hautkontakt. Dazwischen keine Wischdesinfektion und keine Auflage. Keine sichtbare Verschmutzung.',
+  confront:'Es war wirklich nichts zu sehen. Und abends wird ohnehin alles desinfiziert.',
+  hint:'Wann werden Kontaktflächen von Liegen laut Hygieneplan desinfiziert? Spielt „sieht sauber aus“ dabei eine Rolle?'},
+
+ {id:8, room:'therapie', who:'nele', mx:112, my:150, title:'Kaum trocken, schon belegt', focus:'Benutzen der Liege nach der Wischdesinfektion',
+  witnessName:'Paul Neumann', witnessRole:'Praktikant Physiotherapie',
+  statement:'Nach Herrn Fuchs habe ich die Liege wischdesinfiziert. Sobald die Oberfläche angetrocknet war, durfte sich Frau Seidel hinlegen.',
+  witness:'Auf dem Etikett steht eine Einwirkzeit von fünf Minuten. Nach zwei Minuten lag die nächste Patientin schon drauf. Das ist doch viel zu früh!',
+  evidenceTitle:'B08 · Beobachtungsprotokoll Hygienerundgang',
+  evidence:'14:10 Uhr, Therapieraum 2, Liege 2. N. Brandt wischdesinfiziert Liegefläche und Kopfstütze mit einem getränkten Einmaltuch aus dem Tuchspender. Vorher keine sichtbare Verunreinigung mit Blut, Sekreten oder Ausscheidungen. Mittel: Standard-Flächendesinfektionsmittel der Klinik, bakterizid und levurozid. Keine Isolierung, keine Schlussdesinfektion. 14:12 Uhr: Fläche vollständig angetrocknet, Patientin legt sich hin.',
+  confront:'Ich habe mich an den Aushang neben dem Tuchspender gehalten. Warum sollte ich fünf Minuten warten, wenn nichts auf der Liege war?',
+  hint:'Der Hygieneplan nennt Fälle, in denen die volle Einwirkzeit abgewartet werden muss. Trifft einer davon hier zu?'},
+
+ {id:9, room:'isolier', who:'jonas', mx:230, my:150, title:'Gangschule trotz MRSA', focus:'MRSA-Patient außerhalb des Isolierzimmers',
+  witnessName:'Anja Roth', witnessRole:'Pflegefachfrau, Station 4B',
+  statement:'Herr Krause hat MRSA in der Nase, aber keine Wunde und keinen Atemwegsinfekt. Er macht gut mit. Deshalb habe ich ihn zur Gangschule in den Therapieraum mitgenommen.',
+  witness:'Ein MRSA-Patient gehört ins Isolierzimmer, Punkt. Wenn der durch den Therapieraum läuft, verteilt er die Keime im ganzen Haus.',
+  evidenceTitle:'B09 · Beobachtungsprotokoll Hygienerundgang',
+  evidence:'15:00 Uhr, Zimmer 4.20 und Therapieraum 1. Herr Krause: MRSA-Besiedlung im Nasenvorhof, keine Wunden, keine Atemwegsinfektion, versteht die Schutzmaßnahmen und hält sie ein. Vor Verlassen des Zimmers Händedesinfektion unter Anleitung. Patient trägt während der gesamten Gangschule einen medizinischen Mund-Nasen-Schutz. J. Brehm trägt Schutzkittel und Mund-Nasen-Schutz, Händedesinfektion vor und nach dem Kontakt. Nach der Einheit: Barrenholme und Rollatorgriffe wischdesinfiziert.',
+  confront:'Soll Herr Krause etwa wochenlang nur im Zimmer liegen und das Laufen verlernen? Ich habe vorher alles mit der Station abgesprochen.',
+  hint:'Der Hygieneplan legt fest, unter welchen Bedingungen MRSA-besiedelte Patient:innen das Zimmer verlassen dürfen. Gleichen Sie jede Bedingung mit dem Protokoll ab.'},
+
+ {id:10, room:'isolier', who:'mira', mx:292, my:150, title:'Sauber desinfiziert', focus:'Händehygiene beim Verlassen des Zimmers 4.22',
+  witnessName:'Anja Roth', witnessRole:'Pflegefachfrau, Station 4B',
+  statement:'Ich habe bei Frau Lehmann Atemtherapie gemacht, mit Kittel und Handschuhen. Beim Rausgehen habe ich alles abgelegt und mir gründlich die Hände desinfiziert. Waschen muss man ja nur bei sichtbarem Schmutz.',
+  witness:'Bei Frau Lehmann gehe ich nach dem Desinfizieren immer noch ans Waschbecken. Das hat uns die Hygiene bei ihr extra so gesagt.',
+  evidenceTitle:'B10 · Auszug Patientenakte und Beobachtungsprotokoll',
+  evidence:'Patientenakte Frau Lehmann, Zimmer 4.22: Clostridioides-difficile-Infektion nachgewiesen, akuter Durchfall seit gestern. Einzelzimmer mit eigener Nasszelle. Beobachtung 15:40 Uhr: M. Yıldız legt im Zimmer Handschuhe und langärmeligen Schutzkittel ab, führt eine hygienische Händedesinfektion durch, verlässt das Zimmer und geht direkt zur nächsten Patientin. Keine Händewaschung.',
+  confront:'Das Desinfektionsmittel tötet doch fast alles ab. Meine Hände waren sauber, warum hätte ich sie danach noch waschen sollen?',
+  hint:'Wirkt alkoholisches Händedesinfektionsmittel gegen alle Erreger gleich gut? Suchen Sie im Hygieneplan nach Clostridioides difficile.'}
+];
+
+const PLAN = [
+ {id:'P1', title:'Die fünf Anlässe der Händedesinfektion',
+  rule:['Desinfizieren Sie Ihre Hände',
+   '1. unmittelbar vor direktem Patientenkontakt,',
+   '2. unmittelbar vor aseptischen Tätigkeiten,',
+   '3. unmittelbar nach Kontakt mit potenziell infektiösem Material, z. B. Sekret, Urin oder Blut,',
+   '4. nach direktem Patientenkontakt,',
+   '5. nach Kontakt mit der direkten Patientenumgebung.',
+   'Das gilt auch dann, wenn Sie danach Handschuhe anziehen.'],
+  explain:'Zur direkten Patientenumgebung gehören auf Station das Bett mit Bettgitter, der Nachttisch mit den persönlichen Gegenständen und Geräte, die nur dieser Person zugeordnet sind. Wer diese Flächen anfasst, nimmt Erreger mit, auch ohne die Person selbst zu berühren.',
+  physio:'Mobilisieren, Palpieren und Lagern sind direkter Patientenkontakt. Bett verstellen und Nachttisch verschieben sind Kontakt mit der Patientenumgebung.',
+  sources:[{t:'KRINKO: Händehygiene in Einrichtungen des Gesundheitswesens. Bundesgesundheitsblatt 2016, Abschnitt 3', u:'https://edoc.rki.de/handle/176904/268'}]},
+
+ {id:'P2', title:'Hände desinfizieren und Hände waschen',
+  rule:['Standard ist die hygienische Händedesinfektion: etwa 3 bis 5 ml in die trockenen Hände geben, alle Hautpartien benetzen und für die vom Hersteller angegebene Einwirkzeit einreiben, üblicherweise 30 Sekunden.',
+   'Hände waschen Sie, wenn sie sichtbar verschmutzt sind, nach dem Toilettengang und bei Erregern, gegen die Händedesinfektionsmittel nicht ausreichend wirken (siehe P9). Danach die Hände gründlich abtrocknen.'],
+  explain:'Alkoholische Händedesinfektionsmittel reduzieren die meisten Erreger zuverlässiger als Waschen und sind hautverträglicher. Häufiges Waschen schädigt die Haut, und geschädigte Haut lässt sich schlechter desinfizieren.',
+  physio:'Zwischen zwei Behandlungen ohne sichtbare Verschmutzung genügt die Händedesinfektion.',
+  sources:[{t:'KRINKO: Händehygiene in Einrichtungen des Gesundheitswesens. Bundesgesundheitsblatt 2016, Abschnitte 5.1 bis 5.4', u:'https://edoc.rki.de/handle/176904/268'}]},
+
+ {id:'P3', title:'Medizinische Einmalhandschuhe',
+  rule:['Tragen Sie Einmalhandschuhe, wenn Kontakt mit Blut, Körperflüssigkeiten, Sekreten, Ausscheidungen, Schleimhäuten oder nicht intakter Haut zu erwarten ist. Außerdem, wenn der Hygieneplan sie bei einem bestimmten Erreger vorschreibt (z. B. P9).',
+   'Nicht angezeigt sind Handschuhe zum Beispiel bei Untersuchungen ohne Kontakt mit Schleimhaut, Blut oder Wunde, beim Positionieren und beim Begleiten von Patient:innen.',
+   'Handschuhe ersetzen keine Händedesinfektion. Nach dem Ausziehen desinfizieren Sie immer die Hände. Handschuhe gehören nicht als Vorrat in die Kasacktasche.'],
+  explain:'Unnötig getragene Handschuhe verleiten dazu, die Händedesinfektion auszulassen, und verteilen Erreger von Fläche zu Fläche.',
+  physio:'Ob Handschuhe nötig sind, entscheidet der zu erwartende Kontakt, nicht die Nähe zur Patientin oder zum Patienten.',
+  sources:[{t:'KRINKO: Kommentar zum indikationsgerechten Einsatz medizinischer Einmalhandschuhe. Epidemiologisches Bulletin 10/2024, Abschnitt 4 und Tabelle', u:'https://edoc.rki.de/handle/176904/11558'},
+   {t:'KRINKO: Händehygiene in Einrichtungen des Gesundheitswesens. Bundesgesundheitsblatt 2016, Abschnitt 6.1', u:'https://edoc.rki.de/handle/176904/268'}]},
+
+ {id:'P4', title:'Schmuck, Uhren und Fingernägel',
+  rule:['Bei allen Tätigkeiten, die eine hygienische Händedesinfektion erfordern, tragen Sie an Händen und Unterarmen keine Schmuckstücke, keine Ringe (auch keinen Ehering), keine Armbanduhren, keine Piercings und keine Freundschaftsbänder.',
+   'Fingernägel sind kurz und rund geschnitten und überragen die Fingerkuppe nicht. Künstliche und gegelte Nägel sind nicht erlaubt. Nagellack wird abgelehnt.'],
+  explain:'Unter Ringen und Armbändern bleiben Erreger trotz Desinfektion zurück. Schmuck kann außerdem Handschuhe beschädigen und Patient:innen verletzen.',
+  physio:'Festlegung der Klinik: Smartwatches und Fitnessarmbänder zählen wie Armbanduhren. Für Übungszeiten nutzen Sie die Wanduhr oder eine Uhr an der Kasacktasche.',
+  sources:[{t:'TRBA 250 Biologische Arbeitsstoffe im Gesundheitsdienst, Ausgabe November 2025, Abschnitt 4.1.8', u:'https://www.baua.de/DE/Angebote/Regelwerk/TRBA/TRBA-250'},
+   {t:'KRINKO: Händehygiene in Einrichtungen des Gesundheitswesens. Bundesgesundheitsblatt 2016, Abschnitt 3.3', u:'https://edoc.rki.de/handle/176904/268'}]},
+
+ {id:'P5', title:'Eigener Atemwegsinfekt im Dienst',
+  rule:['Beschäftigte, die trotz eines leichten Infekts (z. B. Schnupfen bei einem grippalen Infekt) arbeits- und einsatzfähig sind, tragen bei Patientenkontakt einen medizinischen Mund-Nasen-Schutz.',
+   'Nach dem Naseputzen desinfizieren Sie die Hände (P1, Anlass 3).'],
+  explain:'Der Mund-Nasen-Schutz dient hier dem Schutz der Patient:innen vor Tröpfchen der erkälteten Person.',
+  physio:'Festlegung der Klinik: Wer Fieber hat oder sich krank fühlt, arbeitet nicht und meldet sich bei der Leitung. Über die Arbeitsfähigkeit entscheidet nicht der Hygieneplan.',
+  sources:[{t:'KRINKO-Stellungnahme: Indikationsgerechte Verwendung eines medizinischen Mund-Nasen-Schutzes (MNS) im Gesundheitswesen. Epidemiologisches Bulletin 1/2026, Abschnitt 3', u:'https://edoc.rki.de/bitstream/handle/176904/13120/EB-1-2026_10-25646-13571.pdf'}]},
+
+ {id:'P6', title:'Blasenkatheter bei Mobilisation und Transport',
+  rule:['Das Urinableitungssystem bleibt geschlossen und wird nicht getrennt.',
+   'Der Auffangbeutel hängt frei, ohne Bodenkontakt und immer unterhalb des Blasenniveaus.',
+   'Vor jedem Transport, besonders vor dem Umlagern, wird der Beutel geleert. Den Schlauch nicht abknicken und keine durchhängenden Schlaufen bilden.',
+   'Vor und nach jedem Handgriff an Katheter oder Ableitungssystem: Händedesinfektion.'],
+  explain:'Hängt der Beutel über der Blase, kann Urin aus dem Beutel und dem Schlauch zurück in Richtung Blase laufen und Erreger mitnehmen. Katheter-assoziierte Harnwegsinfektionen gehören zu den häufigsten Infektionen im Krankenhaus.',
+  physio:'Beim Gehtraining den Beutel unterhalb der Hüfte befestigen, z. B. mit einer Halterung am unteren Teil von Rollator oder Ständer, ohne dass er den Boden berührt.',
+  sources:[{t:'KRINKO: Prävention und Kontrolle Katheter-assoziierter Harnwegsinfektionen. Bundesgesundheitsblatt 2015, Abschnitte 4.2 und 4.3', u:'https://edoc.rki.de/handle/176904/260'}]},
+
+ {id:'P7', title:'Liegen und Kontaktflächen im Therapiebereich',
+  rule:['Flächen, die nacheinander mit der Haut verschiedener Patient:innen in Kontakt kommen, z. B. Liegeflächen und Kopfstützen, werden nach jeder Benutzung desinfiziert.',
+   'Gewischt wird mit einem getränkten Einmaltuch. Sprühen ist nur erlaubt, wo Wischen nicht möglich ist.',
+   'Nach der Wischdesinfektion darf die Fläche benutzt werden, sobald sie angetrocknet ist.',
+   'Die volle Einwirkzeit laut Hersteller warten Sie nur in besonderen Fällen ab, unter anderem: nach sichtbarer Verunreinigung mit Blut, Sekreten oder Ausscheidungen, bei der Schlussdesinfektion (z. B. nach einer Isolierung) und bei Mitteln, die gezielt gegen bestimmte Viren oder Sporen eingesetzt werden und deren Wirksamkeit nur im Labortest belegt ist.'],
+  explain:'„Sieht sauber aus“ ist kein Maßstab: Erreger sind unsichtbar. Umgekehrt ist bei einer normal genutzten, sichtbar sauberen Fläche die Wirkung bis zum Antrocknen ausreichend.',
+  physio:'Liegen, Kopfstützen, Barrenholme und Griffe gehören nach jeder Person desinfiziert, nicht erst am Abend.',
+  sources:[{t:'KRINKO: Anforderungen an die Hygiene bei der Reinigung und Desinfektion von Flächen. Bundesgesundheitsblatt 2026, Empfehlungen 4.1.E und 5.2.A, Abschnitt 6.1', u:'https://edoc.rki.de/handle/176904/13786'}]},
+
+ {id:'P8', title:'MRSA: Aufenthalt außerhalb des Zimmers',
+  rule:['MRSA-besiedelte oder -infizierte Patient:innen werden im Einzelzimmer untergebracht.',
+   'Sie dürfen das Zimmer verlassen, z. B. zur Therapie, wenn sie die Schutzmaßnahmen einhalten können und alle drei Bedingungen erfüllt sind: 1. vorhandene Wunden sind abgedeckt, 2. Händedesinfektion vor dem Verlassen des Zimmers, 3. in pflegerischen und therapeutischen Bereichen trägt die Person einen Mund-Nasen-Schutz.',
+   'Personal: Vor therapeutischen Maßnahmen legen Sie Schutzkittel und Mund-Nasen-Schutz an, Handschuhe bei zu erwartendem Kontakt mit potenziell infektiösem Material. Kontaktflächen werden nach dem Einsatz desinfiziert.'],
+  explain:'MRSA wird vor allem über Kontakt übertragen, meist über Hände und Flächen. Besiedlung heißt: Die Bakterien sind da, verursachen aber keine Infektion.',
+  physio:'Festlegung der Klinik: Die KRINKO verlangt eine Risikoanalyse und lässt Kliniken Spielraum. Die Kreisklinik Mühlenbach übernimmt dafür das Merkblatt des Landesamts für Verbraucherschutz Sachsen-Anhalt.',
+  sources:[{t:'Landesamt für Verbraucherschutz Sachsen-Anhalt, Netzwerk Hygiene (HYSA): Merkblatt zum Umgang mit MRSA-Patienten im Krankenhaus, Stand 05/2025', u:'https://verbraucherschutz.sachsen-anhalt.de/fileadmin/Bibliothek/Politik_und_Verwaltung/MS/LAV_Verbraucherschutz/hysa/Merkblatt_MRSA_KH_05_2025.pdf'},
+   {t:'KRINKO: Empfehlungen zur Prävention und Kontrolle von MRSA in medizinischen und pflegerischen Einrichtungen. Bundesgesundheitsblatt 2014', u:'https://edoc.rki.de/handle/176904/259'}]},
+
+ {id:'P9', title:'Clostridioides difficile',
+  rule:['Patient:innen mit Clostridioides-difficile-Infektion liegen im Einzelzimmer mit eigener Nasszelle.',
+   'Beim Betreten legen Sie einen langärmeligen Schutzkittel und Einmalhandschuhe an. Vor dem Verlassen des Zimmers: beides ablegen, Hände desinfizieren und anschließend die Hände waschen.',
+   'Flächen werden mit einem Mittel mit nachgewiesener Wirksamkeit gegen Clostridioides difficile desinfiziert. Die Isolierung gilt mindestens bis 48 Stunden nach Ende des Durchfalls.'],
+  explain:'Clostridioides difficile bildet Sporen. Alkoholische Händedesinfektionsmittel wirken gegen Sporen nicht ausreichend. Beim Waschen werden die Sporen mechanisch von den Händen entfernt.',
+  physio:'Gilt auch nach Atemtherapie oder Mobilisation, wenn die Hände sauber aussehen.',
+  sources:[{t:'KRINKO: Hygienemaßnahmen bei Clostridioides difficile-Infektion (CDI). Bundesgesundheitsblatt 2019, Abschnitt 8', u:'https://edoc.rki.de/handle/176904/6224'},
+   {t:'RKI-Ratgeber Clostridioides difficile, Stand 22.01.2025', u:'https://www.rki.de/DE/Aktuelles/Publikationen/RKI-Ratgeber/Ratgeber/Ratgeber_Clostridium.html'}]},
+
+ {id:'P10', title:'Norovirus',
+  rule:['Erkrankte werden in einem Zimmer mit eigenem WC isoliert, bei mehreren Betroffenen gegebenenfalls gemeinsam als Kohorte.',
+   'Für Hände und Flächen werden Mittel mit dem Wirkbereich „begrenzt viruzid PLUS“ oder „viruzid“ verwendet.',
+   'Die Maßnahmen gelten während der Erkrankung und mindestens in den ersten 48 Stunden nach Ende von Erbrechen und Durchfall. Erkranktes Personal arbeitet frühestens 2 Tage nach Abklingen der Beschwerden wieder.'],
+  explain:'Noroviren sind sehr ansteckend und auf Flächen lange haltbar. Nicht jedes Händedesinfektionsmittel wirkt gegen sie.',
+  physio:'Achten Sie auf den Wirkbereich auf dem Etikett des Spenders.',
+  sources:[{t:'RKI-Ratgeber Norovirus-Gastroenteritis, Stand 29.11.2019', u:'https://www.rki.de/DE/Aktuelles/Publikationen/RKI-Ratgeber/Ratgeber/Ratgeber_Noroviren.html'}]},
+
+ {id:'P11', title:'Schutzkleidung und Arbeitskleidung',
+  rule:['Getragene Schutzkleidung und kontaminierte Arbeitskleidung nehmen Sie nicht mit nach Hause.',
+   'Mit Schutzkleidung oder kontaminierter Arbeitskleidung betreten Sie keine Pausen- oder Bereitschaftsräume.',
+   'Schutzkittel und Schürzen werden patientenbezogen getragen, wenn eine Kontamination der Kleidung wahrscheinlich ist.'],
+  explain:'Kleidung kann Erreger von einer Person zur nächsten und aus der Klinik hinaus tragen.',
+  physio:'Die Schürze aus dem Zimmer der einen Patientin ist nicht die Schürze für den nächsten Patienten.',
+  sources:[{t:'TRBA 250 Biologische Arbeitsstoffe im Gesundheitsdienst, Ausgabe November 2025, Abschnitt 4.2.7', u:'https://www.baua.de/DE/Angebote/Regelwerk/TRBA/TRBA-250'},
+   {t:'KRINKO: Infektionsprävention im Rahmen der Pflege und Behandlung von Patienten mit übertragbaren Krankheiten. Bundesgesundheitsblatt 2015, Abschnitt 2.2.2', u:'https://edoc.rki.de/handle/176904/262'}]}
+];
+
+</script>
+<script>
+'use strict';
+(function(){
+const KEY='keimspur-station4b-v1';
+const GATE=4;
+const $=s=>document.querySelector(s);
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fresh=()=>({room:'personal',caseId:1,seen:{},notes:{},decisions:{},reviewed:{},started:false,finished:false});
+let state=fresh(),storageOK=true,activeStep='',returnFocus=null,toastTimer=null;
+
+function load(){try{const raw=localStorage.getItem(KEY);if(!raw)return;const s=JSON.parse(raw);if(s&&typeof s==='object'){state={...fresh(),...s};for(const k of ['seen','notes','decisions','reviewed'])if(!state[k]||typeof state[k]!=='object')state[k]={};if(!CASES.some(c=>c.id===state.caseId))state.caseId=1;if(!ROOMS.some(r=>r.id===state.room))state.room='personal';}}catch(e){storageOK=false;}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));storageOK=true;}catch(e){storageOK=false;}
+ $('#save-status').textContent=storageOK?'Fortschritt und Notizen bleiben nur in diesem Browser auf diesem Gerät.':'Speichern im Browser ist hier nicht möglich. Drucken Sie Ihre Notizen vor dem Schließen aus.';}
+
+const seen=(id,k)=>!!state.seen[id]?.includes(k);
+const evidenceCount=()=>CASES.filter(c=>seen(c.id,'evidence')).length;
+const isoOpen=()=>evidenceCount()>=GATE;
+const who=c=>PEOPLE[c.who];
+const pad=n=>String(n).padStart(2,'0');
+
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),4600);}
+function mark(id,k){const was=isoOpen();if(!seen(id,k)){state.seen[id]=[...(state.seen[id]||[]),k];save();if(!was&&isoOpen())toast('Frau Adler hat Sie eingewiesen. Der Isolierbereich ist jetzt zugänglich.');}}
+
+function setRoom(id){if(id==='isolier'&&!isoOpen()){toast(`Sichern Sie zuerst ${GATE} Belege. Dann weist Frau Adler Sie in den Isolierbereich ein.`);return;}
+ state.room=id;state.caseId=CASES.find(c=>c.room===id).id;activeStep='';save();render();}
+function setCase(id){const c=CASES.find(x=>x.id===id);if(!c)return;if(c.room==='isolier'&&!isoOpen()){toast('Der Isolierbereich öffnet nach der Einweisung.');return;}
+ state.caseId=id;state.room=c.room;activeStep='';save();render();}
+
+/* ---------- Grundriss (Pixel) ---------- */
+const cv=$('#plan-canvas'),ctx=cv.getContext('2d');
+const R=(x,y,w,h,c)=>{ctx.fillStyle=c;ctx.fillRect(x,y,w,h);};
+function floor(x,y,w,h,a,b,s){for(let j=0;j<h;j+=s)for(let i=0;i<w;i+=s)R(x+i,y+j,Math.min(s,w-i),Math.min(s,h-j),((i/s+j/s)%2)?a:b);}
+function wall(x,y,w,h){R(x,y,w,h,'#070e10');R(x,y,w,1,'#3e5a60');}
+function person(x,y,kasack,hair,skin){R(x+1,y,4,1,hair);R(x,y+1,6,3,skin);R(x,y+1,6,1,hair);R(x+1,y+2,1,1,'#1b1b1b');R(x+4,y+2,1,1,'#1b1b1b');R(x-1,y+4,8,5,kasack);R(x-1,y+4,8,1,'rgba(255,255,255,.25)');R(x-2,y+5,1,3,skin);R(x+7,y+5,1,3,skin);R(x,y+9,2,3,'#233036');R(x+4,y+9,2,3,'#233036');}
+function bed(x,y,blanket,patientHair){R(x-1,y-1,20,34,'#0a1214');R(x,y,18,32,'#bfc9c4');R(x+1,y+1,16,7,'#e8efe9');R(x+5,y+2,8,5,'#d9b99b');R(x+5,y+2,8,2,patientHair);R(x+1,y+9,16,22,blanket);for(let i=0;i<5;i++)R(x+1,y+12+i*4,16,1,'rgba(0,0,0,.12)');R(x-2,y+10,1,14,'#8aa0a4');}
+function dispenser(x,y){R(x,y,4,6,'#dfe8ea');R(x+1,y+1,2,3,'#6ec6e6');R(x+1,y+6,2,1,'#9aa8ab');}
+function sink(x,y){R(x,y,14,8,'#c7d2d4');R(x+2,y+2,10,4,'#8fa3a8');R(x+6,y-2,2,3,'#9aa8ab');}
+function drawPlan(t){
+ R(0,0,320,200,'#081113');
+ floor(0,0,126,92,'#25363b','#223238',6);          // Personal
+ floor(128,0,192,92,'#2a3e3b','#273a37',6);        // Zimmer
+ floor(0,94,320,16,'#2a3438','#283236',4);         // Flur
+ floor(0,112,198,88,'#3a3325','#352f22',5);        // Therapie (Holzboden)
+ floor(200,112,120,88,'#2d3a3a','#2a3636',6);      // Isolier
+ R(0,101,320,1,'#43585c');
+ // Wände
+ wall(0,0,320,2);wall(0,0,2,200);wall(318,0,2,200);wall(0,198,320,2);
+ wall(126,0,2,94);wall(0,92,40,2);wall(58,92,110,2);wall(186,92,60,2);wall(264,92,56,2);
+ wall(0,110,70,2);wall(88,110,150,2);wall(256,110,64,2);wall(198,110,2,90);wall(258,112,2,40);wall(258,166,2,34);
+ // Personalbereich
+ for(let i=0;i<6;i++){R(6+i*11,6,10,24,'#5b7179');R(6+i*11,6,10,1,'#8aa0a8');R(13+i*11,16,1,3,'#c9d4d6');}
+ R(6,40,44,14,'#4a3b2c');R(6,40,44,2,'#6d5741');R(14,34,14,7,'#1d2a2e');R(15,35,12,5,'#3f7f95');R(40,37,5,4,'#e8efe9');
+ sink(98,10);dispenser(114,6);
+ R(70,58,40,20,'#39505a');R(70,58,40,2,'#52707a');R(76,62,6,5,'#e8efe9');R(92,63,8,4,'#f2c84b');
+ person(36,48,'#2f7fa2','#3a2a1e','#e0b894');     // Jonas
+ person(82,26,'#2f7fa2','#b0763a','#f1c7a8');     // Lea
+ person(104,20,'#2f7fa2','#1d1512','#c9956d');    // Mira
+ // Patientenzimmer
+ R(160,2,40,3,'#8fc9e0');R(244,2,40,3,'#8fc9e0');
+ wall(222,2,2,40);
+ bed(140,12,'#4f7f86','#b9b9b9');bed(190,12,'#6a7f59','#d0d0d0');bed(234,12,'#4f7f86','#8a6a4a');bed(284,12,'#6a7f59','#f0e0c0');
+ R(162,16,9,9,'#6d5741');R(163,17,3,3,'#a8d8ea');R(212,16,9,9,'#6d5741');R(214,18,4,2,'#1b1b1b');R(258,16,9,9,'#6d5741');
+ dispenser(134,62);dispenser(300,62);
+ R(178,56,1,26,'#9aa8ab');R(174,56,9,1,'#9aa8ab');R(176,58,5,8,'#dfeaf0');R(176,64,5,2,'#f2c84b');
+ R(168,72,14,1,'#b8c2c4');R(168,72,1,10,'#b8c2c4');R(181,72,1,10,'#b8c2c4');
+ person(186,66,'#e8efe9','#c8c8c8','#e2bb9a');    // Herr Albrecht
+ person(166,62,'#2f7fa2','#3a2a1e','#e0b894');    // Jonas
+ person(270,34,'#2f7fa2','#101010','#a8744f');    // Samir
+ person(218,50,'#2f7fa2','#7a4a22','#f1c7a8');    // Nele
+ // Flur
+ dispenser(48,96);dispenser(176,96);dispenser(254,96);
+ R(120,97,18,10,'#5b7179');R(121,98,16,4,'#d9e2dc');
+ // Therapieraum
+ R(6,116,4,60,'#6d5741');for(let i=0;i<10;i++)R(4,118+i*6,8,1,'#8f7556');
+ const liege=(x,y)=>{R(x,y,34,14,'#0a1214');R(x+1,y+1,32,12,'#4f8f88');R(x+1,y+1,8,12,'#5aa39b');R(x+3,y+14,2,4,'#8aa0a4');R(x+29,y+14,2,4,'#8aa0a4');};
+ liege(24,140);liege(96,140);
+ person(46,130,'#2f7fa2','#101010','#a8744f');    // Samir
+ person(118,128,'#2f7fa2','#7a4a22','#f1c7a8');   // Nele
+ R(30,184,60,2,'#b8c2c4');R(30,172,60,2,'#b8c2c4');for(const x of [30,58,88])R(x,172,2,14,'#8aa0a4');
+ const ball=(x,y,c)=>{R(x+1,y,4,6,c);R(x,y+1,6,4,c);R(x+1,y+1,2,1,'rgba(255,255,255,.4)');};
+ ball(150,120,'#d0584f');ball(158,124,'#4f8fd0');ball(168,120,'#e0b64f');
+ R(140,176,50,16,'#4d4467');R(140,176,50,1,'#6a5f8a');
+ sink(174,150);dispenser(188,140);
+ // Isolierbereich
+ R(202,114,54,4,'#f2c84b');R(206,115,46,2,'#2a2a20');
+ for(let i=0;i<4;i++){R(206+i*11,124,8,16,'#f2c84b');R(206+i*11,124,8,2,'#fff0a0');}
+ sink(214,176);dispenser(240,170);R(246,150,8,10,'#5b7179');
+ bed(270,122,'#6a7f59','#c8c8c8');bed(294,160,'#4f7f86','#e0d0b0');
+ R(259,153,1,13,'#f2c84b'); // Tür mit Schild
+ R(261,156,6,5,'#f2c84b');
+ person(228,142,'#f2c84b','#3a2a1e','#e0b894');   // Jonas im Kittel
+ person(284,146,'#f2c84b','#1d1512','#c9956d');   // Mira im Kittel
+ if(!isoOpen()){ctx.fillStyle='rgba(8,17,19,.62)';ctx.fillRect(200,112,118,86);for(let i=0;i<118;i+=8){R(200+i,112,4,2,'#f2c84b');R(200+i,196,4,2,'#f2c84b');}}
+ // Schwarzlicht-Spuren an ungesicherten Belegen
+ const pulse=t==null?0.7:0.55+0.35*Math.sin(t/420);
+ for(const c of CASES){if(c.room==='isolier'&&!isoOpen())continue;const done=seen(c.id,'evidence');
+  if(done){R(c.mx-1,c.my-1,3,3,'#f2c84b');continue;}
+  ctx.fillStyle=`rgba(166,244,255,${0.22*pulse})`;ctx.fillRect(c.mx-4,c.my-3,9,7);
+  ctx.fillStyle=`rgba(166,244,255,${pulse})`;
+  for(const [dx,dy] of [[0,0],[2,-2],[-2,1],[3,2],[-3,-1],[1,3]])ctx.fillRect(c.mx+dx,c.my+dy,1,1);}
+}
+const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let last=0;
+function loop(t){if(t-last>120){drawPlan(t);last=t;}requestAnimationFrame(loop);}
+
+/* ---------- Oberfläche ---------- */
+function render(){
+ const n=evidenceCount();
+ $('#count').textContent=`${n} / 10`;
+ $('#meter').innerHTML=CASES.map((c,i)=>`<i class="${i<n?'on':''} ${i===GATE-1?'gate':''}"></i>`).join('');
+ $('#iso-label').textContent=isoOpen()?'Isolierbereich: eingewiesen':`Isolierbereich: Einweisung ab ${GATE} Belegen`;
+ $('#hotspots').innerHTML=ROOMS.map(r=>{const locked=r.id==='isolier'&&!isoOpen();return `<button class="hotspot ${state.room===r.id?'active':''} ${locked?'locked':''}" style="left:${r.x}%;top:${r.y}%" data-room="${r.id}" aria-pressed="${state.room===r.id}"><span class="n">${locked?'▣':r.tag}</span>${esc(r.short)}</button>`;}).join('');
+ const room=ROOMS.find(r=>r.id===state.room),list=CASES.filter(c=>c.room===room.id);
+ $('#room-tag').textContent=`Bereich ${room.tag}`;$('#room-title').textContent=room.name;$('#room-desc').textContent=room.description;
+ $('#room-progress').textContent=`${list.filter(c=>seen(c.id,'evidence')).length} / ${list.length} Belege`;
+ $('#case-list').innerHTML=list.map(c=>`<button class="case-choice ${state.caseId===c.id?'selected':''}" data-case="${c.id}" aria-pressed="${state.caseId===c.id}"><span class="num">FALL ${pad(c.id)}${seen(c.id,'evidence')?' · BELEG ✓':''}</span><strong>${esc(c.title)}</strong><small>${esc(who(c).name)}</small></button>`).join('');
+ $('#field-note').textContent=n===10?'Alle zehn Belege sind gesichert. Prüfen Sie Ihre Notizen und schreiben Sie den Bericht.':isoOpen()?'Sie sind eingewiesen. Auch im Isolierbereich warten zwei Beobachtungen.':`Noch ${GATE-n} ${GATE-n===1?'Beleg':'Belege'} bis zur Einweisung in den Isolierbereich.`;
+ renderCase();
+ if(reduce)drawPlan(null);
+}
+function renderCase(){
+ const c=CASES.find(x=>x.id===state.caseId),p=who(c);
+ const steps=[['person',`${p.name} befragen`],['witness',`${c.witnessName} befragen`],['evidence','Beleg sichern'],['confront','Beleg vorlegen']];
+ const ready=seen(c.id,'person')&&seen(c.id,'witness');
+ let body=`<div class="speaker">Ihr nächster Schritt</div><p>Hören Sie zuerst ${esc(p.name)} und ${esc(c.witnessName)}. Sichern Sie dann den Beleg und legen Sie ihn vor. Die Bewertung treffen Sie mit dem Hygieneplan.</p>`,doc=false;
+ if(activeStep==='person')body=`<div class="speaker">${esc(p.name)} · Aussage</div><p>„${esc(c.statement)}“</p>`;
+ if(activeStep==='witness')body=`<div class="speaker">${esc(c.witnessName)} · ${esc(c.witnessRole)}</div><p>„${esc(c.witness)}“</p>`;
+ if(activeStep==='evidence'){doc=true;body=`<div class="speaker">${esc(c.evidenceTitle)}</div><p>${esc(c.evidence)}</p>`;}
+ if(activeStep==='confront')body=`<div class="speaker">${esc(p.name)} · Nachfrage mit Beleg</div><p>„${esc(c.confront)}“</p>`;
+ $('#case-panel').innerHTML=`<div class="file-head"><span class="eyebrow">Fallakte ${pad(c.id)} / 10</span><h2>${esc(c.title)}</h2><div class="person"><span class="token" aria-hidden="true">${p.token}</span><span><strong>${esc(p.name)}</strong><span>${esc(p.role)}</span></span></div></div>
+ <div class="file-body"><p class="question">Prüffrage: Liegt beim Thema „${esc(c.focus)}“ ein Hygienefehler vor?</p>
+ <div class="steps">${steps.map(([k,l])=>`<button data-step="${k}" class="${seen(c.id,k)?'done':''} ${activeStep===k?'active':''}" ${(k==='evidence'&&!ready)||(k==='confront'&&!seen(c.id,'evidence'))?'disabled':''} aria-pressed="${activeStep===k}">${esc(l)}</button>`).join('')}</div>
+ <div class="dialogue ${doc?'document':''}" aria-live="polite">${body}</div>
+ <div class="actions"><button data-action="plan">Hygieneplan öffnen</button><button data-action="case-note" class="primary">Notiz zu Fall ${c.id}</button></div>
+ <details class="help"><summary>Denkhilfe einblenden</summary><p>${esc(c.hint)}</p></details>
+ <p class="foot">${seen(c.id,'evidence')?'Beleg gesichert. ':''}${state.reviewed[c.id]?'Von Ihnen als geprüft markiert.':'Ihr Urteil schreiben Sie selbst auf das Berichtsblatt.'}</p></div>`;
+}
+
+/* ---------- Fenster ---------- */
+function openModal(title,html){const m=$('#modal');if(!m.open)returnFocus=document.activeElement;$('#modal-title').textContent=title;$('#modal-body').innerHTML=html;if(!m.open)m.showModal();m.scrollTop=0;}
+function closeModal(){$('#modal').close();}
+
+function showMission(){state.started=true;save();openModal('Ihr Auftrag',`
+ <span class="stamp">KREISKLINIK MÜHLENBACH · STATION 4B</span>
+ <p>Auf Station 4B sind in den letzten Wochen mehr Infektionen aufgetreten als üblich. Die Hygienefachkraft Karin Adler hat zehn Beobachtungen gesammelt, die ihr gemeldet wurden. Sie bittet Sie als neue Praktikant:innen der Physiotherapie, jede Beobachtung mit frischem Blick zu prüfen.</p>
+ <ol>
+  <li><strong>Bereich wählen:</strong> Klicken Sie auf dem Grundriss einen Bereich an und öffnen Sie eine Fallakte.</li>
+  <li><strong>Beide Seiten hören:</strong> Befragen Sie die beteiligte Person und die Zeugin oder den Zeugen. Erst dann können Sie den Beleg sichern und vorlegen.</li>
+  <li><strong>Regeln prüfen:</strong> Vergleichen Sie den Beleg mit dem Hygieneplan der Klinik. Halten Sie Ihre Gedanken im Notizbuch fest.</li>
+  <li><strong>Bericht schreiben:</strong> Entscheiden Sie auf dem Berichtsblatt für jeden Fall, ob ein Hygienefehler vorliegt. Begründen Sie mit Beleg und Regel. Liegt ein Fehler vor, beschreiben Sie, wie es richtig wäre.</li>
+ </ol>
+ <p>Nach ${GATE} gesicherten Belegen weist Frau Adler Sie in den Isolierbereich ein. <strong>Nicht jede verdächtige Situation ist ein Fehler.</strong> Die leuchtenden Punkte auf dem Grundriss zeigen, wo noch Belege liegen.</p>
+ <div class="notice"><strong>So werden die Fälle geprüft</strong><p>Alle Personen, Orte und Ereignisse sind erfunden. Geprüft wird nur die Prüffrage des jeweiligen Falls. Was im Fall nicht erwähnt wird, gilt als korrekt. Grundlage ist ausschließlich der Hygieneplan der Kreisklinik Mühlenbach in diesem Spiel. Im Praktikum gilt der Hygieneplan Ihrer Einrichtung.</p></div>
+ <p class="muted">Sie können ohne Zeitdruck arbeiten. Vorgesehen sind etwa 55 Minuten Ermittlung und danach der schriftliche Bericht. Ihre Eingaben bleiben nur in diesem Browser auf diesem Gerät. Es wird nichts an Ihre Lehrkraft gesendet.</p>
+ <div class="btnrow"><button class="primary" data-action="close">Ermittlung beginnen</button></div>`);}
+
+function showPlan(focus){openModal('Hygieneplan · Kreisklinik Mühlenbach',`
+ <p>Auszug für Praktikant:innen. Die Regeln sind in eigenen Worten zusammengefasst und an den genannten Quellen geprüft (Stand ${GEPRUEFT}). Maßgeblich sind die verlinkten Originale. Mit „Festlegung der Klinik“ gekennzeichnete Punkte hat die fiktive Klinik selbst bestimmt.</p>
+ <div class="plan"><nav class="plan-index" aria-label="Regeln">${PLAN.map(p=>`<button data-plan="${p.id}"><b>${p.id}</b>${esc(p.title)}</button>`).join('')}</nav>
+ <div class="plan-cards">${PLAN.map(p=>`<section class="rule-card" id="plan-${p.id}"><h3><span>${p.id}</span>${esc(p.title)}</h3>
+  <div class="rule">${p.rule.map(r=>`<p>${esc(r)}</p>`).join('')}</div>
+  <p class="why"><b>Warum:</b> ${esc(p.explain)}</p>
+  <p class="phys"><b>Im Therapiealltag:</b> ${esc(p.physio)}</p>
+  <div class="src">${p.sources.map(s=>`<span>Quelle: ${esc(s.t)} · <a href="${s.u}" target="_blank" rel="noopener">Original öffnen ↗</a></span>`).join('')}</div></section>`).join('')}</div></div>`);
+ if(focus)document.getElementById('plan-'+focus)?.scrollIntoView({block:'start'});}
+
+function noteCard(c){const p=who(c);return `<section class="note-card" id="note-${c.id}"><div class="note-top"><h3>Fall ${pad(c.id)} · ${esc(c.title)}</h3><button data-jump="${c.id}">Zur Akte</button></div>
+ <p class="muted">${esc(p.name)} · ${esc(c.focus)} · ${seen(c.id,'evidence')?'Beleg gesichert':'Beleg fehlt noch'}</p>
+ ${seen(c.id,'evidence')?`<details><summary>${esc(c.evidenceTitle)} noch einmal lesen</summary><p class="muted" style="margin-top:6px">${esc(c.evidence)}</p></details>`:''}
+ <label for="decision-${c.id}">Vorläufiges Urteil</label>
+ <select id="decision-${c.id}" data-decision="${c.id}"><option value="">Noch offen</option><option value="ja" ${state.decisions[c.id]==='ja'?'selected':''}>Hygienefehler liegt vor</option><option value="nein" ${state.decisions[c.id]==='nein'?'selected':''}>Kein Hygienefehler zur Prüffrage</option></select>
+ <label for="note-text-${c.id}">Beleg, Regel aus dem Hygieneplan, Begründung, gegebenenfalls: Wie wäre es richtig?</label>
+ <textarea id="note-text-${c.id}" data-note="${c.id}" placeholder="Zum Beispiel: Laut Beleg … Regel P… sagt … Deshalb … Richtig wäre …">${esc(state.notes[c.id])}</textarea>
+ <label class="check"><input type="checkbox" id="review-${c.id}" data-review="${c.id}" ${state.reviewed[c.id]?'checked':''}><span>Diesen Fall habe ich selbst geprüft.</span></label></section>`;}
+function showNotes(id){const list=id?CASES.filter(c=>c.id===id):CASES;openModal(id?`Notizbuch · Fall ${pad(id)}`:'Ihr Ermittlungsnotizbuch',`
+ <p>Notieren Sie die entscheidenden Fakten. „Geprüft“ bedeutet bearbeitet, nicht richtig. Das Spiel verrät keine Lösungen.</p>
+ ${list.map(noteCard).join('')}
+ <div class="btnrow"><button data-action="all-notes">Alle Notizen anzeigen</button><button data-action="print-notes">Notizen drucken</button><button data-action="export">Notizen als Textdatei speichern</button></div>`);}
+
+function showReport(){const n=evidenceCount(),done=CASES.filter(c=>state.reviewed[c.id]).length;openModal('Abschlussbericht',`
+ <span class="stamp">${state.finished?'ERMITTLUNG ABGESCHLOSSEN':'IHRE ERMITTLUNG'}</span>
+ <p><strong>${n} von 10 Belegen gesichert · ${done} von 10 Fällen als geprüft markiert</strong></p>
+ <p>Ihr Bericht entsteht auf dem Berichtsblatt, das Sie von Ihrer Lehrkraft erhalten. Tragen Sie für <strong>alle zehn Fälle</strong> ein: Hygienefehler ja oder nein, die passende Regel aus dem Hygieneplan, den entscheidenden Beleg und eine Begründung. Liegt ein Fehler vor, beschreiben Sie, wie es richtig wäre.</p>
+ <div class="notice"><strong>Eine gute Begründung verbindet drei Dinge:</strong><p>„Es liegt ein / kein Hygienefehler vor, weil [konkreter Beleg] und nach Regel P[Nummer] [passende Regel] gilt.“</p></div>
+ <div class="btnrow"><button data-action="print-blank">Leeres Berichtsblatt drucken</button><button data-action="all-notes">Notizen prüfen</button></div>
+ <div class="report-list">${CASES.map(c=>`<div><strong>${pad(c.id)} · ${esc(c.title)}</strong><small>${seen(c.id,'evidence')?'Beleg vorhanden':'Beleg fehlt'} · ${state.reviewed[c.id]?'geprüft':'noch nicht markiert'}</small></div>`).join('')}</div>
+ <p class="muted">${n<10?'Sie können den Bericht schon beginnen. Für den Abschluss der Ermittlung fehlen noch Belege.':'Alle Belege sind gesichert. Ihr Urteil gehört jetzt auf das Berichtsblatt.'}</p>
+ <div class="btnrow"><button class="primary" data-action="finish" ${n<10?'disabled':''}>Ermittlung abschließen</button></div>`);}
+function finish(){if(evidenceCount()<10)return;state.finished=true;save();openModal('Die Spur ist gesichert',`
+ <span class="stamp">ERMITTLUNG ABGESCHLOSSEN</span>
+ <p>Alle zehn Belege liegen bei Frau Adler. Welche Beobachtungen tatsächlich Hygienefehler sind, entscheiden Sie mit einer nachvollziehbaren Begründung.</p>
+ <div class="notice"><strong>Letzter Auftrag</strong><p>Füllen Sie das Berichtsblatt vollständig aus und geben Sie es Ihrer Lehrkraft. „Ermittlung abgeschlossen“ heißt nicht, dass Ihr Bericht abgegeben oder bewertet ist.</p></div>
+ <div class="btnrow"><button data-action="all-notes">Meine Notizen</button><button class="primary" data-action="close">Weiter ermitteln</button></div>`);}
+
+function exportNotes(){let t='KEIMSPUR · STATION 4B · ERMITTLUNGSNOTIZEN\n\n';for(const c of CASES){t+=`Fall ${pad(c.id)}: ${c.title} (${c.focus})\nBeleg: ${seen(c.id,'evidence')?c.evidence:'noch nicht gesichert'}\nVorläufiges Urteil: ${state.decisions[c.id]==='ja'?'Hygienefehler':state.decisions[c.id]==='nein'?'kein Hygienefehler':'offen'}\nNotizen: ${state.notes[c.id]||'-'}\n\n`;}
+ try{const u=URL.createObjectURL(new Blob([t],{type:'text/plain;charset=utf-8'}));const a=document.createElement('a');a.href=u;a.download='Keimspur-Notizen.txt';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1500);toast('Die Textdatei wird gespeichert. Falls nichts passiert: Notizen drucken.');}catch(e){toast('Speichern ist hier nicht möglich. Bitte Notizen drucken.');}}
+function printSheet(withNotes){$('#print-area').innerHTML=`<h1>Keimspur · Station 4B · ${withNotes?'Meine Notizen':'Berichtsblatt'}</h1><p class="meta">Name: ______________________ Klasse: __________ Datum: __________</p>${withNotes?'':'<p class="meta">Prüfen Sie alle zehn Fälle. Kreuzen Sie an, nennen Sie die Regel aus dem Hygieneplan, den entscheidenden Beleg und Ihre Begründung.</p>'}${CASES.map(c=>`<section class="pc"><h3>Fall ${pad(c.id)} · ${esc(c.title)} · ${esc(c.focus)}</h3>${withNotes?`<p>Vorläufiges Urteil: ${state.decisions[c.id]==='ja'?'Hygienefehler':state.decisions[c.id]==='nein'?'kein Hygienefehler':'offen'}</p><p>${esc(state.notes[c.id]||'Keine Notiz')}</p>`:`<p>Hygienefehler? □ ja □ nein &nbsp;&nbsp; Regel: P____</p><p>Entscheidender Beleg:</p><div class="ln"></div><p>Begründung:</p><div class="ln"></div><div class="ln"></div><p>Falls Fehler, richtig wäre:</p><div class="ln"></div>`}</section>`).join('')}`;
+ if($('#modal').open)closeModal();setTimeout(()=>window.print(),50);}
+function reset(){openModal('Neu beginnen?',`<p>Damit werden Fortschritt und Notizen in diesem Browser gelöscht. Drucken oder speichern Sie Ihre Notizen vorher, wenn Sie sie behalten möchten.</p><div class="btnrow"><button data-action="print-notes">Notizen drucken</button><button data-action="do-reset">Löschen und neu beginnen</button><button class="primary" data-action="close">Abbrechen</button></div>`);}
+
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+ if(b.dataset.room){setRoom(b.dataset.room);return;}
+ if(b.dataset.case){setCase(Number(b.dataset.case));return;}
+ if(b.dataset.step){const k=b.dataset.step,id=state.caseId;if((k==='evidence'&&!(seen(id,'person')&&seen(id,'witness')))||(k==='confront'&&!seen(id,'evidence')))return;activeStep=k;mark(id,k);render();document.querySelector(`[data-step="${k}"]`)?.focus({preventScroll:true});return;}
+ if(b.dataset.plan){document.getElementById('plan-'+b.dataset.plan)?.scrollIntoView({block:'start'});return;}
+ if(b.dataset.jump){closeModal();setCase(Number(b.dataset.jump));return;}
+ switch(b.dataset.action){
+  case 'plan':showPlan();break;case 'case-note':showNotes(state.caseId);break;case 'all-notes':showNotes();break;
+  case 'close':closeModal();break;case 'export':exportNotes();break;case 'print-notes':printSheet(true);break;case 'print-blank':printSheet(false);break;
+  case 'finish':finish();break;case 'do-reset':state=fresh();activeStep='';save();closeModal();render();showMission();break;}
+});
+document.addEventListener('input',e=>{if(e.target.dataset.note){state.notes[e.target.dataset.note]=e.target.value;save();}});
+document.addEventListener('change',e=>{if(e.target.dataset.decision){state.decisions[e.target.dataset.decision]=e.target.value;save();}if(e.target.dataset.review){state.reviewed[e.target.dataset.review]=e.target.checked;save();renderCase();}});
+$('#mission-btn').onclick=showMission;$('#plan-btn').onclick=()=>showPlan();$('#notes-btn').onclick=()=>showNotes();$('#report-btn').onclick=showReport;
+$('#close-modal').onclick=closeModal;$('#reset-btn').onclick=reset;$('#print-btn').onclick=()=>printSheet(false);$('#home').onclick=()=>setRoom('personal');
+$('#modal').addEventListener('close',()=>{if(returnFocus&&returnFocus.isConnected)returnFocus.focus();});
+
+load();if(state.room==='isolier'&&!isoOpen()){state.room='personal';state.caseId=1;}
+render();save();
+if(!reduce)requestAnimationFrame(loop);
+if(!state.started)showMission();
+})();
+
+</script>
+</body>
+</html>
