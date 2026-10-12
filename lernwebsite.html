@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hygiene &amp; Allgemeine Infektionslehre – Lernwebsite</title>
+<style>
+:root{
+  --tanne:#2D3D2E; --wald:#3F5C41; --oliv:#6E7A4E; --creme:#F4F0E3; --creme2:#EAE4D0;
+  --gold:#B99341; --rot:#8C2B2B; --ink:#1f261f; --card:#ffffff;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:Calibri,'Segoe UI',ui-sans-serif,sans-serif; color:var(--ink); background:var(--creme); line-height:1.55;}
+h1,h2,h3,h4{font-family:Georgia,'Times New Roman',serif; color:var(--tanne);}
+header{background:var(--tanne); color:#fff; padding:26px 20px 20px;}
+header .kicker{text-transform:uppercase; letter-spacing:.12em; font-size:.75rem; color:var(--creme);}
+header h1{color:#fff; font-size:1.6rem; margin:.25em 0;}
+header .sub{color:var(--creme); font-size:.95rem;}
+.progress-wrap{max-width:1000px; margin:14px auto 0;}
+.progress-outer{background:rgba(255,255,255,.2); border-radius:99px; height:12px; overflow:hidden;}
+.progress-inner{background:var(--gold); height:100%; width:0%; transition:width .4s;}
+.progress-label{font-size:.8rem; color:var(--creme); margin-top:4px;}
+nav{background:var(--wald); position:sticky; top:0; z-index:50; display:flex; flex-wrap:wrap; gap:2px; padding:6px 10px; justify-content:center;}
+nav button{background:transparent; border:none; color:#fff; font-family:Calibri,sans-serif; font-size:.95rem; padding:9px 14px; cursor:pointer; border-radius:6px;}
+nav button:hover{background:rgba(255,255,255,.15);}
+nav button.active{background:var(--gold); color:var(--tanne); font-weight:bold;}
+nav button .done{color:var(--creme2); font-size:.8em;}
+main{max-width:1000px; margin:0 auto; padding:24px 16px 80px;}
+section.page{display:none;}
+section.page.visible{display:block; animation:fade .25s;}
+@keyframes fade{from{opacity:0; transform:translateY(6px);} to{opacity:1;}}
+.card{background:var(--card); border:1px solid #ddd6c2; border-radius:10px; padding:20px 22px; margin:18px 0; box-shadow:0 1px 3px rgba(45,61,46,.08);}
+.card h2{border-bottom:2px solid var(--gold); padding-bottom:6px; margin-bottom:12px; font-size:1.3rem;}
+.card h3{margin:14px 0 8px; font-size:1.08rem; color:var(--wald);}
+.tag{display:inline-block; background:var(--oliv); color:#fff; font-size:.72rem; padding:2px 10px; border-radius:99px; text-transform:uppercase; letter-spacing:.06em; margin-bottom:8px;}
+.tag.gold{background:var(--gold); color:var(--tanne);}
+.tag.rot{background:var(--rot);}
+p{margin:8px 0;}
+ul,ol{margin:8px 0 8px 22px;}
+li{margin:4px 0;}
+.warn{background:#F9EFE7; border-left:6px solid var(--rot); border-radius:6px; padding:12px 16px; margin:12px 0;}
+.warn .wtitle{color:var(--rot); font-weight:bold; font-family:Georgia,serif;}
+.note{background:var(--creme); border-left:6px solid var(--gold); border-radius:6px; padding:12px 16px; margin:12px 0;}
+.check{display:flex; gap:10px; align-items:flex-start; padding:7px 10px; border-radius:6px; margin:4px 0; background:#fbfaf5; border:1px solid #e5dfc9; cursor:pointer;}
+.check input{margin-top:4px; accent-color:var(--wald); width:17px; height:17px; flex-shrink:0;}
+.check.checked{background:#eef2e6;}
+.quiz-q{border:1px solid #ddd6c2; border-radius:8px; padding:14px 16px; margin:12px 0; background:#fbfaf5;}
+.quiz-q .qtext{font-weight:bold; margin-bottom:8px;}
+.opt{display:block; width:100%; text-align:left; background:#fff; border:1.5px solid #cfc8ae; border-radius:6px; padding:8px 12px; margin:5px 0; cursor:pointer; font-family:Calibri,sans-serif; font-size:.97rem;}
+.opt:hover{border-color:var(--wald);}
+.opt.correct{background:#e4eedd; border-color:#3F5C41; font-weight:bold;}
+.opt.wrong{background:#f6e3e3; border-color:var(--rot);}
+.opt:disabled{cursor:default; opacity:.92;}
+.feedback{font-size:.92rem; margin-top:8px; padding:8px 10px; border-radius:6px; display:none;}
+.feedback.show{display:block;}
+.feedback.ok{background:#e4eedd;}
+.feedback.no{background:#f6e3e3;}
+.score{font-weight:bold; color:var(--wald); margin-top:10px;}
+.ki-prompt{background:var(--tanne); color:var(--creme); font-family:Consolas,'Courier New',monospace; font-size:.9rem; border-radius:8px; padding:14px 16px; margin:10px 0; white-space:pre-wrap; position:relative;}
+.ki-prompt .copy{position:absolute; top:8px; right:8px; background:var(--gold); color:var(--tanne); border:none; border-radius:5px; padding:3px 10px; font-size:.78rem; cursor:pointer; font-family:Calibri,sans-serif;}
+details.hilfe{border:1px solid var(--gold); border-radius:8px; margin:8px 0; background:#fdfbf4;}
+details.hilfe summary{cursor:pointer; padding:9px 14px; font-weight:bold; color:var(--tanne); font-family:Georgia,serif;}
+details.hilfe div{padding:0 14px 12px;}
+textarea{width:100%; min-height:110px; border:1.5px solid #cfc8ae; border-radius:8px; padding:10px 12px; font-family:Calibri,sans-serif; font-size:.97rem; resize:vertical;}
+textarea:focus{outline:2px solid var(--wald);}
+.savehint{font-size:.8rem; color:var(--oliv); margin-top:4px;}
+.btn{background:var(--wald); color:#fff; border:none; border-radius:8px; padding:10px 20px; font-size:1rem; cursor:pointer; font-family:Calibri,sans-serif; margin:6px 6px 6px 0;}
+.btn:hover{background:var(--tanne);}
+.btn.gold{background:var(--gold); color:var(--tanne); font-weight:bold;}
+.btn.ghost{background:transparent; color:var(--wald); border:1.5px solid var(--wald);}
+.grid2{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+@media(max-width:760px){.grid2{grid-template-columns:1fr;}}
+.pathcard{border:2px solid var(--wald); border-radius:10px; padding:16px;}
+.pathcard.analog{border-color:var(--oliv);}
+.fall{background:#f3f5ee; border:1px solid var(--oliv); border-radius:10px; padding:14px 16px; margin:12px 0;}
+.fall .fname{font-family:Georgia,serif; font-weight:bold; color:var(--tanne);}
+table{border-collapse:collapse; width:100%; margin:10px 0; font-size:.95rem;}
+th{background:var(--tanne); color:#fff; font-family:Georgia,serif; font-weight:normal; padding:8px 10px; text-align:left;}
+td{border:1px solid #cfc8ae; padding:7px 10px; vertical-align:top;}
+tr:nth-child(even) td{background:var(--creme);}
+.videobox{background:#f3f5ee; border:1px solid var(--oliv); border-radius:10px; padding:14px 16px; margin:12px 0;}
+.videobox h3{margin-top:0;}
+.videobox .v{margin:8px 0; padding-left:26px; position:relative;}
+.videobox .v::before{content:"▶"; position:absolute; left:0; top:1px; color:var(--wald); font-size:.9rem;}
+.videobox a{color:var(--wald); font-weight:bold;}
+.videobox .auftrag{font-size:.92rem; color:#444; margin-top:2px;}
+.footer-note{font-size:.8rem; color:#6b6b5c; text-align:center; margin-top:30px;}
+/* ---------- Nachweis-Overlay ---------- */
+.nachweis-overlay{display:none; position:fixed; inset:0; z-index:1000; background:rgba(45,61,46,.62); overflow-y:auto; padding:28px 14px;}
+.nachweis-overlay.open{display:block;}
+.nachweis-sheet{background:#fff; max-width:760px; margin:0 auto; border-radius:10px; box-shadow:0 24px 64px -16px rgba(45,61,46,.5); overflow:hidden;}
+.nachweis-toolbar{background:var(--tanne); padding:14px 22px; display:flex; justify-content:space-between; align-items:center; gap:14px; flex-wrap:wrap;}
+.nachweis-toolbar span{color:var(--creme); font-family:Georgia,serif; font-style:italic; font-size:1rem;}
+.nachweis-toolbar-btns{display:flex; gap:8px;}
+.nachweis-btn{border:none; border-radius:8px; padding:8px 16px; font-family:Calibri,sans-serif; font-size:.92rem; font-weight:bold; cursor:pointer;}
+.nachweis-btn.print{background:var(--gold); color:var(--tanne);}
+.nachweis-btn.close{background:transparent; color:var(--creme); border:1.5px solid rgba(244,240,227,.45); font-weight:normal;}
+.nachweis-body{padding:34px 42px 40px; color:var(--ink);}
+.nachweis-head{border-bottom:2px solid var(--tanne); padding-bottom:16px; margin-bottom:22px;}
+.nachweis-eyebrow{font-size:.72rem; letter-spacing:.14em; text-transform:uppercase; color:var(--oliv); font-weight:bold; margin-bottom:6px;}
+.nachweis-head h3{font-family:Georgia,serif; font-size:1.7rem; font-weight:normal; color:var(--tanne); margin:0; line-height:1.15;}
+.nachweis-head h3 em{font-style:italic; color:var(--wald);}
+.nachweis-namerow{display:flex; gap:28px; margin-top:16px; flex-wrap:wrap;}
+.nachweis-namefield{flex:1; min-width:180px;}
+.nachweis-namefield label{display:block; font-size:.68rem; letter-spacing:.12em; text-transform:uppercase; color:var(--oliv); font-weight:bold; margin-bottom:4px;}
+.nachweis-namefield input{width:100%; border:none; border-bottom:1.5px solid var(--tanne); background:transparent; font-family:Georgia,serif; font-size:1.05rem; color:var(--ink); padding:4px 0; outline:none; border-radius:0;}
+.nachweis-namefield input:focus{border-bottom-color:var(--gold);}
+.nachweis-summary{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:22px;}
+.nachweis-stat{background:var(--creme); border-radius:8px; padding:14px 10px; text-align:center;}
+.nachweis-stat-val{font-family:Georgia,serif; font-size:2rem; color:var(--wald); line-height:1;}
+.nachweis-stat-lbl{font-size:.72rem; color:var(--oliv); letter-spacing:.05em; margin-top:6px;}
+.nachweis-table{width:100%; border-collapse:collapse; margin:0 0 18px; font-size:.92rem;}
+.nachweis-table th{white-space:nowrap; background:transparent; color:var(--tanne); font-family:Calibri,sans-serif; font-size:.68rem; letter-spacing:.1em; text-transform:uppercase; font-weight:bold; padding:8px 10px; border-bottom:2px solid var(--tanne); text-align:left;}
+.nachweis-table td{border:none; border-bottom:1px solid #ddd6c2; padding:9px 10px; background:transparent!important; color:#333;}
+.nachweis-table th.center,.nachweis-table td.center{text-align:center;}
+.nachweis-table .unit-cell{font-weight:bold; color:var(--tanne);}
+.nachweis-table .unit-cell small{display:block; font-weight:normal; color:#555; font-size:.82rem;}
+.nachweis-table td.center small{display:block; color:#777; font-size:.76rem;}
+.nachweis-check{font-weight:bold; font-size:1.05rem;}
+.nachweis-check.yes{color:var(--wald);}
+.nachweis-check.no{color:#999;}
+.nachweis-foot{border-top:1px dashed #cfc8ae; padding-top:14px; font-size:.8rem; color:#555; line-height:1.5;}
+.nachweis-sign{display:flex; gap:36px; margin-top:30px;}
+.nachweis-sign-field{flex:1;}
+.nachweis-sign-line{border-bottom:1.5px solid var(--tanne); height:30px;}
+.nachweis-sign-lbl{font-size:.68rem; letter-spacing:.1em; text-transform:uppercase; color:var(--oliv); margin-top:5px;}
+@media(max-width:600px){.nachweis-body{padding:24px 18px;} .nachweis-summary{grid-template-columns:1fr;}}
+
+/* ---------- Druck: nur den Nachweis, eine Seite ---------- */
+@media print{
+  @page{size:A4; margin:14mm 16mm;}
+  body{background:#fff;}
+  body > *:not(.nachweis-overlay){display:none!important;}
+  .nachweis-overlay{display:block!important; position:static; background:none; padding:0; overflow:visible;}
+  .nachweis-sheet{box-shadow:none; max-width:100%; border-radius:0;}
+  .nachweis-toolbar{display:none!important;}
+  .nachweis-body{padding:0;}
+  .nachweis-stat{-webkit-print-color-adjust:exact; print-color-adjust:exact;}
+  .nachweis-namefield input{border-bottom:1px solid #000;}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="progress-wrap">
+    <div class="kicker">Berufsfachschule Physiotherapie · Lerngebiet 8 (RRL 2.4.8)</div>
+    <h1>Hygiene &amp; Allgemeine Infektionslehre</h1>
+    <div class="sub">Interaktive Lernwebsite · Klasse 1 · Ihr Fortschritt wird auf diesem Gerät gespeichert</div>
+    <div class="progress-outer" style="margin-top:12px"><div class="progress-inner" id="pbar"></div></div>
+    <div class="progress-label" id="plabel">Fortschritt: 0 %</div>
+  </div>
+</header>
+<nav id="nav"></nav>
+<main id="app">
+
+<!-- ================= START ================= -->
+<section class="page" id="page-start">
+  <div class="card">
+    <span class="tag gold">Start</span>
+    <h2>Willkommen – so arbeiten Sie mit dieser Website</h2>
+    <p>Diese Website begleitet Sie durch fünf Unterrichtsblöcke. Sie können jeden Block selbstgesteuert bearbeiten: Prüfen Sie zuerst im <strong>Check-in</strong>, was Sie können müssen. Arbeiten Sie dann die Inhalte und Aufgaben durch. Am Ende jedes Blocks zeigen Quiz und Selbstcheck, wo Sie stehen.</p>
+    <div class="note"><strong>Zwei Wege, ein Ziel:</strong> Zu jedem Block gibt es einen <strong>KI-Weg</strong> (auf dieser Website, mit KI-Werkstatt) und einen <strong>analogen Weg</strong> (im Workbook, ganz ohne Gerät). Beide führen zum selben Lernprodukt – Sie bzw. Ihre Lehrkraft entscheiden, welchen Weg Sie gehen.</div>
+    <div class="warn"><span class="wtitle">▲ Sicherheitszeichen</span><p>Überall, wo Sie dieses Zeichen sehen, geht es um Patientensicherheit: Red Flags, Kontraindikationen oder Situationen, in denen falsches Handeln Menschen gefährdet. Diese Inhalte sind immer prüfungsrelevant.</p></div>
+    <h3>Spielregeln für die KI-Werkstatt</h3>
+    <ul>
+      <li>KI-Ausgaben sind <strong>Rohmaterial, keine Wahrheit</strong>. Jede fachliche Aussage wird gegen eine belegbare Quelle geprüft (RKI, KRINKO, AWMF-Leitlinien, Gesetzestexte, MSD Manual).</li>
+      <li>Sie müssen jede übernommene Aussage <strong>mündlich erklären und verteidigen</strong> können – „das hat die KI gesagt" zählt nicht als Begründung.</li>
+      <li>Notieren Sie bei jeder Recherche: Aussage → Quelle → geprüft am.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h2>Die fünf Blöcke</h2>
+    <table>
+      <tr><th>Block</th><th>Thema</th><th>Leitfrage</th></tr>
+      <tr><td><strong>A</strong></td><td>Warum Hygiene? – Die Hygienefelder</td><td>Warum starben in Semmelweis' Klinik die Mütter?</td></tr>
+      <tr><td><strong>B</strong></td><td>Erreger, Infektionskette, Epidemiologie</td><td>Wie kommt der Erreger zum Menschen – und wo unterbrechen wir die Kette?</td></tr>
+      <tr><td><strong>C</strong></td><td>Hygiene am Arbeitsplatz Physiotherapie</td><td>Was muss ich am Behandlungsplatz konkret tun – und warum genau so?</td></tr>
+      <tr><td><strong>D</strong></td><td>Umwelthygiene</td><td>Was macht Wasser, Luft und Abfall mit der Gesundheit?</td></tr>
+      <tr><td><strong>E</strong></td><td>Sozialhygiene und öffentlicher Gesundheitsdienst</td><td>Wer schützt die Bevölkerung – und welche Gesetze binden mich?</td></tr>
+    </table>
+    <h3>Ihre Fallpersonen</h3>
+    <p>Fünf Menschen begleiten Sie durch das gesamte Lerngebiet – Sie treffen sie in Aufgaben, Rollenspielen und in der Klausur wieder:</p>
+    <div class="fall"><span class="fname">Frau Kowalski (68)</span> – ambulante Praxis, nach Hüft-OP, MRSA-Besiedelung bekannt · <span class="fname">Herr Demir (54) ▲</span> – Klinik, Chemotherapie, stark geschwächte Abwehr · <span class="fname">Herr Winkler (47)</span> – Bewegungsbad, Fußpilz · <span class="fname">Frau Neumann (33) ▲</span> – Physiotherapeutin, Verletzung mit Blutkontakt · <span class="fname">Herr Krüger (82) ▲</span> – Pflegeeinrichtung, Verdacht auf Skabies</div>
+  </div>
+</section>
+
+<!-- ================= BLOCK A ================= -->
+<section class="page" id="page-A">
+  <div class="card">
+    <span class="tag">Block A · 4 Std</span>
+    <h2>Warum Hygiene? – Die Hygienefelder</h2>
+    <h3>Check-in: Was muss ich können?</h3>
+    <div id="checkin-A"></div>
+  </div>
+  <div class="card">
+    <h2>Wissen kompakt</h2>
+    <h3>Der Fall Semmelweis (Wien, 1847)</h3>
+    <p>In der Geburtsklinik, in der Ärzte und Studenten arbeiteten, starben deutlich mehr Mütter am Kindbettfieber als in der Abteilung der Hebammen, im Jahresmittel etwa das Zwei- bis Vierfache, in einzelnen Monaten noch weit mehr. Ignaz Semmelweis fand den Unterschied: Die Ärzte kamen direkt aus dem Seziersaal an die Gebärenden – ohne wirksame Händereinigung. Nach Einführung der Händedesinfektion mit Chlorkalk sank die Sterblichkeit drastisch. Semmelweis wurde zu Lebzeiten verlacht, denn dass Mikroorganismen Krankheiten auslösen, war damals noch nicht bewiesen. Die Lehre daraus gilt bis heute: <strong>Hygienemaßnahmen wirken – auch wenn man den Erreger nicht sieht.</strong></p>
+    <h3>Was ist Hygiene?</h3>
+    <p>Hygiene ist die Lehre von der Verhütung von Krankheiten und der Erhaltung und Förderung der Gesundheit. Sie wird in drei Felder eingeteilt:</p>
+    <table>
+      <tr><th>Hygienefeld</th><th>Gegenstand</th><th>Beispiel Physiotherapie</th></tr>
+      <tr><td><strong>Allgemeine Hygiene</strong></td><td>Umwelt- und Gemeinschaftsbedingungen: Wasser, Luft, Boden, Abfall, Wohnen</td><td>Wasserqualität im Bewegungsbad, Lüftung des Behandlungsraums</td></tr>
+      <tr><td><strong>Persönliche Hygiene</strong></td><td>Körperpflege, Bekleidung, gesundes persönliches Umfeld</td><td>Gepflegte, kurze Fingernägel; saubere Arbeitskleidung</td></tr>
+      <tr><td><strong>Arbeitsplatzhygiene</strong></td><td>Schutzmaßnahmen am beruflichen Arbeitsplatz</td><td>Händedesinfektion, Liegenaufbereitung, Umgang mit ansteckenden Patientinnen und Patienten</td></tr>
+    </table>
+    <div class="note"><strong>Warum das für Sie zählt:</strong> Physiotherapie ist ein Beruf mit sehr viel direktem Hautkontakt zu wechselnden Patientinnen und Patienten. In Deutschland treten nach Schätzungen des Robert Koch-Instituts jährlich etwa 400.000 bis 600.000 Infektionen im Zusammenhang mit medizinischer Behandlung auf (nosokomiale Infektionen); ein relevanter Teil davon wäre durch konsequente Hygiene vermeidbar. Ihre Hände sind Übertragungsweg Nummer eins – oder die wichtigste Schutzmaßnahme.</div>
+  </div>
+  <div class="card">
+    <h2>Lernprodukt Block A: Concept-Map der Hygienefelder</h2>
+    <p>Erstellen Sie eine Concept-Map, die die drei Hygienefelder mit jeweils mindestens vier konkreten Beispielen aus dem physiotherapeutischen Alltag verbindet. Kennzeichnen Sie mit ▲, wo Patientensicherheit direkt betroffen ist.</p>
+    <div class="grid2">
+      <div class="pathcard"><h3>KI-Weg</h3><p>Nutzen Sie die KI-Werkstatt unten: Lassen Sie sich Beispiele vorschlagen, <strong>prüfen</strong> Sie jedes Beispiel kritisch und übernehmen Sie nur, was Sie fachlich begründen können.</p></div>
+      <div class="pathcard analog"><h3>Analoger Weg</h3><p>Workbook Seite „Block A": Concept-Map auf Papier, Beispiele aus Erfahrung und Lehrbuch. Gleiche Anforderungen, gleiche Bewertung.</p></div>
+    </div>
+    <h3>KI-Werkstatt A: Vorschläge einholen – und aussieben</h3>
+    <p>Kopieren Sie diesen Prompt in ein KI-Tool Ihrer Wahl:</p>
+    <div class="ki-prompt"><button class="copy" onclick="copyPrompt(this)">Kopieren</button>Du bist Hygienebeauftragte:r einer Physiotherapie-Praxis. Nenne mir je 6 konkrete Beispiele für allgemeine Hygiene, persönliche Hygiene und Arbeitsplatzhygiene im Alltag einer Physiotherapie-Praxis. Markiere Beispiele, bei denen Patientinnen und Patienten direkt gefährdet werden können. Antworte als Tabelle.</div>
+    <p><strong>Ihr Prüfauftrag:</strong> Mindestens zwei der KI-Beispiele passen erfahrungsgemäß nicht sauber in das genannte Feld oder sind zu unkonkret. Finden Sie diese, ordnen Sie sie richtig zu und begründen Sie Ihre Entscheidung mit der Definition der drei Hygienefelder.</p>
+    <details class="hilfe"><summary>Hilfe – Stufe 1 (Denkanstoß)</summary><div><p>Fragen Sie sich bei jedem Beispiel: Betrifft es die Umwelt/Gemeinschaft, den eigenen Körper oder die berufliche Schutzmaßnahme am Patienten?</p></div></details>
+    <details class="hilfe"><summary>Hilfe – Stufe 2 (Strategie)</summary><div><p>Testfrage je Beispiel: Würde diese Maßnahme auch gelten, wenn ich gar nicht im Gesundheitsberuf arbeiten würde? Dann ist es eher persönliche oder allgemeine Hygiene, nicht Arbeitsplatzhygiene.</p></div></details>
+    <details class="hilfe"><summary>Hilfe – Stufe 3 (konkreter Hinweis)</summary><div><p>Typische KI-Unschärfen: „Händewaschen" wird als zentrale Arbeitsplatzhygiene geführt (am Arbeitsplatz ist die Händedesinfektion die Standardmaßnahme; Waschen ist dort nur bei sichtbarer Verschmutzung und in Sonderfällen vorgesehen, als tägliche Körperpflege gehört es zur persönlichen Hygiene), und „Impfung" wird ohne Einordnung gelistet (persönlicher Schutz mit beruflicher Bedeutung – Vertiefung folgt im Fach Prävention).</p></div></details>
+    <h3>Meine Notizen zu Block A</h3>
+    <textarea data-store="notes-A" placeholder="Meine Concept-Map-Ideen, offene Fragen, geprüfte Quellen …"></textarea>
+    <div class="savehint">Wird automatisch auf diesem Gerät gespeichert.</div>
+  </div>
+  <div class="card"><div class="videobox">
+    <h3>🎬 Lernvideos (DGKH – Deutsche Gesellschaft für Krankenhaushygiene)</h3>
+    <div class="v"><a href="https://www.krankenhaushygiene.de/informationen/videos/" target="_blank" rel="noopener">„Sei kein Brähmer“ – der Klassiker (DGKH-Videoseite)</a><div class="auftrag">Sehauftrag: Notieren Sie beim Schauen: Welche drei Hygienefehler macht Dr. Brähmer – und welches Hygienefeld ist jeweils betroffen?</div></div><p class="savehint">Die DGKH-Videos sind bewusst überspitzt – genau das macht die Fehler unvergesslich.</p>
+  </div></div>
+  <div class="card">
+    <h2>Quiz Block A</h2>
+    <div id="quiz-A"></div>
+  </div>
+</section>
+
+<!-- ================= BLOCK B ================= -->
+<section class="page" id="page-B">
+  <div class="card">
+    <span class="tag">Block B · 7 Std</span>
+    <h2>Erreger, Infektionskette, Epidemiologie</h2>
+    <h3>Check-in: Was muss ich können?</h3>
+    <div id="checkin-B"></div>
+  </div>
+  <div class="card">
+    <h2>Wissen kompakt</h2>
+    <h3>Die Erregergruppen</h3>
+    <table>
+      <tr><th>Gruppe</th><th>Merkmale</th><th>Beispiele (physiorelevant)</th><th>Nachweis</th></tr>
+      <tr><td><strong>Viren</strong></td><td>Kein eigener Stoffwechsel, vermehren sich nur in Wirtszellen; Antibiotika wirkungslos</td><td>Influenza, SARS-CoV-2, Hepatitis B/C, HIV, Warzenviren (HPV)</td><td>PCR, Antigen-Schnelltest, Antikörper</td></tr>
+      <tr><td><strong>Bakterien</strong></td><td>Einzeller mit eigenem Stoffwechsel; teils Sporenbildner; Antibiotika wirksam (Resistenzen möglich)</td><td>Staphylococcus aureus/MRSA, Streptokokken, Clostridioides difficile, Tuberkulose-Bakterien</td><td>Abstrich + Kultur, Mikroskopie, PCR</td></tr>
+      <tr><td><strong>Pilze</strong></td><td>Faden- und Sprosspilze; lieben feucht-warmes Milieu</td><td>Fußpilz (Tinea pedis), Candida</td><td>Mikroskopie, Kultur</td></tr>
+      <tr><td><strong>Protozoen</strong></td><td>Tierische Einzeller</td><td>Toxoplasmen, Giardien</td><td>Mikroskopie, Antigen, PCR</td></tr>
+      <tr><td><strong>Makroparasiten</strong></td><td>Mehrzellige Parasiten: Würmer, Milben, Insekten</td><td>Krätzmilbe (Skabies), Madenwürmer, Läuse</td><td>Blickdiagnose, Dermatoskopie, Mikroskopie</td></tr>
+    </table>
+    <h3>Die Infektionskette – und wo Sie sie unterbrechen</h3>
+    <p>Eine Infektion braucht alle sechs Glieder. Jede Hygienemaßnahme greift an mindestens einem Glied an:</p>
+    <table>
+      <tr><th>Glied</th><th>Bedeutung</th><th>Unterbrechung (Beispiel)</th></tr>
+      <tr><td>1. Erreger</td><td>Infektionsauslöser</td><td>Desinfektion, Sterilisation</td></tr>
+      <tr><td>2. Reservoir / Infektionsquelle</td><td>Mensch, Tier, Wasser, Flächen</td><td>Absonderung, Aufbereitung, Wasserhygiene</td></tr>
+      <tr><td>3. Austrittspforte</td><td>Atemwege, Wunden, Ausscheidungen</td><td>Wundabdeckung, Mund-Nasen-Schutz</td></tr>
+      <tr><td>4. Übertragungsweg</td><td>Kontakt/Schmier, Tröpfchen, aerogen, blutübertragen, Vektoren, Wasser/Lebensmittel</td><td>▲ Händedesinfektion (wichtigste Einzelmaßnahme), Flächendesinfektion, Abstand</td></tr>
+      <tr><td>5. Eintrittspforte</td><td>Schleimhäute, Hautverletzungen, Atemwege</td><td>Handschuhe, Wundversorgung, intakte Haut pflegen</td></tr>
+      <tr><td>6. Empfänglicher Wirt</td><td>Abwehrlage entscheidet</td><td>Impfung, Schutz Immunsupprimierter ▲</td></tr>
+    </table>
+    <div class="warn"><span class="wtitle">▲ Abwehrgeschwächte Menschen</span><p>Bei Immunsuppression (z. B. Chemotherapie wie bei Herrn Demir, hohes Alter, Diabetes) können auch harmlose Erreger schwere Infektionen auslösen. Kolonisation, Infektion und Erkrankung sind drei verschiedene Dinge: Wer einen Erreger trägt (Kolonisation), ist nicht automatisch krank – kann ihn aber weitergeben.</p></div>
+    <h3>Ausbreitung von Infektionskrankheiten</h3>
+    <ul>
+      <li><strong>Endemisch:</strong> in einer Region dauerhaft vorhanden (z. B. FSME in Süddeutschland).</li>
+      <li><strong>Epidemie:</strong> zeitlich und örtlich begrenzte Häufung in der Bevölkerung (z. B. regionale Grippewelle).</li>
+      <li><strong>Ausbruch:</strong> Häufung innerhalb einer einzelnen Einrichtung oder Gruppe (z. B. Norovirus im Pflegeheim). Ausbrüche sind nach § 6 IfSG dem Gesundheitsamt zu melden.</li>
+      <li><strong>Pandemie:</strong> länder- und kontinentübergreifende Ausbreitung (z. B. COVID-19 ab 2020).</li>
+    </ul>
+    <p>Kardinalsymptome von Infektionen, auf die Sie in der Behandlung achten: Fieber, Schüttelfrost, lokale Entzündungszeichen (Rötung, Schwellung, Überwärmung, Schmerz, Funktionseinschränkung), auffällige Haut, neu aufgetretene Abgeschlagenheit. <strong>▲ Akuter Infekt mit Fieber ist eine Kontraindikation für belastende Therapie.</strong></p>
+  </div>
+  <div class="card">
+    <h2>Lernprodukt Block B: Erreger-Steckbriefe + Fall-Analyse</h2>
+    <p>Erstellen Sie in Ihrem Team Steckbriefe zu zwei zugeteilten Erregern (Aufbau: Gruppe, Übertragungsweg, typische Erkrankung, Nachweis, drei Schutzmaßnahmen, ▲ wo relevant). Analysieren Sie anschließend die Infektionskette für eine Fallperson.</p>
+    <div class="fall"><span class="fname">Fallaufgabe – Herr Krüger (82):</span> In der Pflegeeinrichtung häufen sich juckende Hautveränderungen. Zeichnen bzw. beschreiben Sie die vollständige Infektionskette für Skabies in dieser Einrichtung und markieren Sie zwei Stellen, an denen die Physiotherapeutin die Kette unterbrechen kann. Notieren Sie Ihre Analyse unten – Sie brauchen sie später im Rollenspiel wieder.</div>
+    <textarea data-store="fall-B" placeholder="Meine Infektionsketten-Analyse zu Herrn Krüger: Erreger … Reservoir … Übertragungsweg …"></textarea>
+    <div class="savehint">Wird automatisch gespeichert und im Lernnachweis angezeigt.</div>
+    <h3>KI-Werkstatt B: Der fehlerhafte KI-Text</h3>
+    <p>Der folgende Text stammt aus einer KI-Antwort. Er klingt flüssig – enthält aber <strong>fünf fachliche Fehler</strong>. Finden Sie alle fünf, korrigieren Sie sie und belegen Sie jede Korrektur mit einer Quelle (RKI-Ratgeber, Lehrbuch, MSD Manual).</p>
+    <div class="note" style="font-style:italic">„Krankheitserreger werden in Viren, Bakterien und Pilze eingeteilt, wobei Pilze eine Unterart der Bakterien sind. Gegen die meisten Viren helfen zuverlässig Antibiotika. MRSA ist ein besonders gefährliches Virus, das vor allem in Krankenhäusern vorkommt. Wer MRSA in der Nase trägt, ist schwer krank und darf nicht physiotherapeutisch behandelt werden. Die Übertragung der meisten Erreger im Gesundheitswesen erfolgt über die Luft, weshalb Händehygiene eine untergeordnete Rolle spielt."</div>
+    <details class="hilfe"><summary>Hilfe – Stufe 1 (Denkanstoß)</summary><div><p>Gehen Sie Satz für Satz vor. Prüfen Sie jede Behauptung einzeln: Einteilung, Wirkung von Antibiotika, Was ist MRSA, Kolonisation vs. Erkrankung, Hauptübertragungsweg.</p></div></details>
+    <details class="hilfe"><summary>Hilfe – Stufe 2 (Strategie)</summary><div><p>Nutzen Sie die Tabelle „Erregergruppen" oben und den RKI-Ratgeber MRSA. Achtung: Ein Fehler steckt in einem einzigen Wort („Virus"?), ein anderer in einer Schlussfolgerung über die Behandlung.</p></div></details>
+    <details class="hilfe"><summary>Hilfe – Stufe 3 (konkreter Hinweis)</summary><div><p>Es sind genau diese fünf Baustellen: (1) Systematik der Erregergruppen, (2) Antibiotika und Viren, (3) MRSA-Erregertyp, (4) Besiedelung vs. Erkrankung und Behandelbarkeit, (5) Hauptübertragungsweg im Gesundheitswesen. Die vollständige Musterlösung besprechen Sie mit Ihrer Lehrkraft.</p></div></details>
+    <textarea data-store="ki-B" placeholder="Fehler 1: … richtig ist: … Quelle: …"></textarea>
+    <div class="savehint">Wird automatisch gespeichert.</div>
+  </div>
+  <div class="card"><div class="videobox">
+    <h3>🎬 Lernvideos (DGKH – Deutsche Gesellschaft für Krankenhaushygiene)</h3>
+    <div class="v"><a href="https://www.krankenhaushygiene.de/informationen/videos/" target="_blank" rel="noopener">„Unsichtbare Killer“ – wie Erreger im Krankenhaus wandern</a><div class="auftrag">Sehauftrag: Verfolgen Sie EINEN Übertragungsweg aus dem Video durch die sechs Glieder der Infektionskette.</div></div><div class="v"><a href="https://www.krankenhaushygiene.de/informationen/videos/" target="_blank" rel="noopener">„Get your disinfection – MRSA“</a><div class="auftrag">Sehauftrag: Was würde Frau Kowalski zu diesem Video sagen? Formulieren Sie zwei Sätze aus ihrer Sicht.</div></div>
+  </div></div>
+  <div class="card">
+    <h2>Quiz Block B</h2>
+    <div id="quiz-B"></div>
+  </div>
+</section>
+
+<!-- ================= BLOCK C ================= -->
+<section class="page" id="page-C">
+  <div class="card">
+    <span class="tag">Block C · 6 Std</span>
+    <h2>Hygiene am Arbeitsplatz Physiotherapie</h2>
+    <h3>Check-in: Was muss ich können?</h3>
+    <div id="checkin-C"></div>
+  </div>
+  <div class="card">
+    <h2>Wissen kompakt</h2>
+    <h3>Begriffstreppe: Reinigung → Desinfektion → Sterilisation</h3>
+    <table>
+      <tr><th>Stufe</th><th>Was passiert</th><th>Wann in der Physiotherapie</th></tr>
+      <tr><td><strong>Reinigung</strong></td><td>Entfernt sichtbaren Schmutz; reduziert Keimzahl mechanisch</td><td>Grundlage – ersetzt keine Desinfektion</td></tr>
+      <tr><td><strong>Desinfektion</strong></td><td>Reduziert Erreger so weit, dass keine Infektion mehr ausgehen kann</td><td>Hände, Behandlungsliege, Geräte, Kontaktflächen – der Standard im Alltag</td></tr>
+      <tr><td><strong>Sterilisation</strong></td><td>Beseitigt alle Mikroorganismen einschließlich Sporen</td><td>Nur für Instrumente mit besonderen Anforderungen – in der Physiotherapie selten</td></tr>
+    </table>
+    <h3>▲ Händehygiene – die wichtigste Einzelmaßnahme</h3>
+    <div class="warn"><span class="wtitle">▲ Die hygienische Händedesinfektion (KRINKO 2016)</span>
+      <ul>
+        <li>Ausreichend Desinfektionsmittel (ca. 3 ml) auf die <strong>trockene</strong> Hand, alle Bereiche benetzen: Handflächen, Handrücken, Fingerzwischenräume, Fingerkuppen, Nagelfalze, Daumen.</li>
+        <li>Einwirkzeit nach Herstellerangabe, in der Regel <strong>mindestens 30 Sekunden</strong> – die Hände müssen die gesamte Zeit feucht bleiben.</li>
+        <li>Voraussetzungen: keine Ringe, Uhren, Armbänder; kurze, unlackierte Fingernägel; keine künstlichen Nägel; intakte Haut (Hautpflege gehört zur Händehygiene).</li>
+        <li>Händewaschen nur bei sichtbarer Verschmutzung und zu Dienstbeginn – <strong>Waschen ersetzt die Desinfektion nicht.</strong></li>
+        <li>Sonderfälle: Bei <strong>Clostridioides difficile</strong> sind die Sporen alkoholresistent, deshalb Handschuhe tragen und nach der Händedesinfektion zusätzlich die Hände waschen (mechanische Entfernung). Bei <strong>Noroviren</strong> bleibt die Desinfektion die Maßnahme, aber mit einem Mittel mit nachgewiesener Wirksamkeit (mindestens „begrenzt viruzid PLUS"). Details regelt der Hygieneplan.</li>
+      </ul>
+    </div>
+    <h3>Die 5 Momente der Händedesinfektion (WHO) – übersetzt für die Physiotherapie</h3>
+    <ol>
+      <li><strong>Vor Patientenkontakt</strong> – bevor Sie Frau Kowalski begrüßen und anfassen.</li>
+      <li><strong>Vor aseptischen Tätigkeiten</strong> – z. B. vor Kontakt mit Wundbereichen, vor dem Anlegen von Tapes auf vorgeschädigter Haut.</li>
+      <li><strong>Nach Kontakt mit potenziell infektiösem Material</strong> – Sekrete, Blut, benutzte Wundauflagen.</li>
+      <li><strong>Nach Patientenkontakt</strong> – nach jeder Behandlung, vor der Dokumentation.</li>
+      <li><strong>Nach Kontakt mit der Patientenumgebung</strong> – Bett, Nachttisch, Rollator, auch ohne direkten Patientenkontakt.</li>
+    </ol>
+    <h3>Arbeitsplatz konkret</h3>
+    <ul>
+      <li><strong>Arbeitskleidung:</strong> täglich wechseln, bei Kontamination sofort; getrennt von Privatkleidung aufbewahren; kurzärmelig für die Händehygiene.</li>
+      <li><strong>Behandlungsliege:</strong> patientenweise Papier-/Tuchwechsel plus Wischdesinfektion der Kontaktflächen; nach Kontamination sofort desinfizieren.</li>
+      <li><strong>Geräte und Hilfsmittel</strong> (Hanteln, Bälle, Elektroden, Übungsgeräte): nach Nutzung wischdesinfizieren – „sieht sauber aus" ist kein Kriterium.</li>
+      <li><strong>Raumhygiene:</strong> regelmäßiges Lüften, Reinigungs- und Desinfektionsplan der Einrichtung, getrennte Zonen (Behandlung / Verwaltung / Sanitär).</li>
+      <li><strong>Schutzmaßnahmen bei ansteckenden Erkrankungen:</strong> Handschuhe, Schutzkittel, Mund-Nasen-Schutz bzw. FFP2 – je nach Übertragungsweg (Kontakt / Tröpfchen / aerogen ▲).</li>
+      <li><strong>Besondere Bereiche:</strong> Onkologie ▲ (protektiver Schutz des Patienten, Fall Demir), Gynäkologie/Geburtshilfe (Schutz von Mutter und Kind, strenge Basishygiene).</li>
+    </ul>
+    <div class="warn"><span class="wtitle">▲ Stich- und Schnittverletzung mit Blutkontakt – die Handlungskette (Fall Neumann)</span>
+      <ol>
+        <li>Blutfluss nicht unterdrücken, ggf. fördern; Wunde spülen und antiseptisch versorgen.</li>
+        <li>Unverzüglich Vorgesetzte informieren und <strong>D-Arzt</strong> aufsuchen (Dokumentation als Arbeitsunfall).</li>
+        <li>Prüfung: Impfstatus (Hepatitis B), Blutentnahmen, ggf. Postexpositionsprophylaxe (HIV: Zeit zählt!).</li>
+        <li>Niemals „Pflaster drauf und weiter" – jedes Blutkontakt-Ereignis wird gemeldet und dokumentiert.</li>
+      </ol>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Lernprodukt Block C: Hygieneplan für einen Behandlungsraum</h2>
+    <p>Erstellen Sie einen tabellarischen Hygieneplan für einen Physiotherapie-Behandlungsraum: Was – womit – wann/wie oft – wer. Mindestens: Hände, Liege, Geräte, Flächen, Kleidung, Verhalten bei ansteckenden Patientinnen und Patienten (▲-Zeilen markieren).</p>
+    <div class="grid2">
+      <div class="pathcard"><h3>KI-Weg</h3><p>Lassen Sie die KI einen Rohentwurf erstellen (Prompt unten) und prüfen Sie ihn Zeile für Zeile gegen die KRINKO-Regeln aus „Wissen kompakt". Markieren Sie: übernommen / korrigiert / gestrichen – mit Begründung.</p></div>
+      <div class="pathcard analog"><h3>Analoger Weg</h3><p>Workbook Seite „Block C": leere Hygieneplan-Tabelle zum Ausfüllen mit Lehrbuch und Merkkasten. Gleiches Lernprodukt, gleiche Bewertung.</p></div>
+    </div>
+    <div class="ki-prompt"><button class="copy" onclick="copyPrompt(this)">Kopieren</button>Erstelle einen tabellarischen Hygieneplan für einen Behandlungsraum einer ambulanten Physiotherapie-Praxis in Deutschland. Spalten: Was / Womit / Wann bzw. wie oft / Wer. Zeilen mindestens: Händedesinfektion, Behandlungsliege, Übungsgeräte, Fußboden, Arbeitskleidung, Verhalten bei Patient:innen mit ansteckender Erkrankung. Orientiere dich an KRINKO-Empfehlungen. Kennzeichne unsichere Angaben ausdrücklich als unsicher.</div>
+    <p><strong>Prüfauftrag:</strong> KI-Hygienepläne enthalten erfahrungsgemäß mindestens einen der folgenden Schwachpunkte – finden Sie ihn: fehlende Einwirkzeiten, „Sterilisation" wo Desinfektion gemeint ist, fehlende Sonderregel für C. difficile und Noroviren, unklare Zuständigkeiten.</p>
+    <div class="fall"><span class="fname">Fallaufgabe – Frau Kowalski (68):</span> Frau Kowalski (MRSA-Besiedelung, reizlose Narbe) hat gleich einen Termin. Entscheiden Sie: Welche Maßnahmen aus Ihrem Hygieneplan gelten sowieso, was kommt gezielt dazu, was wäre Übermaß? Schreiben Sie Ihre Entscheidung mit Begründung auf – Verweigerung der Behandlung ist keine fachlich richtige Option.</div>
+    <textarea data-store="fall-C" placeholder="Basishygiene sowieso: … Gezielt zusätzlich: … Übermaß wäre: … Begründung: …"></textarea>
+    <div class="savehint">Wird automatisch gespeichert.</div>
+  </div>
+  <div class="card"><div class="videobox">
+    <h3>🎬 Lernvideos (DGKH – Deutsche Gesellschaft für Krankenhaushygiene)</h3>
+    <div class="v"><a href="https://www.krankenhaushygiene.de/informationen/videos/" target="_blank" rel="noopener">„Only 30 seconds“ – die Einwirkzeit ▲</a><div class="auftrag">Sehauftrag: Stoppen Sie beim Schauen mit: Wie lang sind 30 Sekunden wirklich? Vergleichen Sie mit Ihrer eigenen Händedesinfektion an Station 1.</div></div><div class="v"><a href="https://www.krankenhaushygiene.de/informationen/videos/" target="_blank" rel="noopener">„Put your gloves on, clap your hands, Mundschutz auf und DANCE!“</a><div class="auftrag">Sehauftrag: Welche zwei Aussagen des Videos decken sich mit dem Merkkasten (Handschuhe ersetzen nichts!)?</div></div><div class="v"><a href="https://www.krankenhaushygiene.de/videos/2016_braehmer_schuetzt_euch_hd.mp4" target="_blank" rel="noopener">„Sei kein Brähmer – Schutzkleidung“ (direkt abspielbar)</a><div class="auftrag">Sehauftrag: Sortieren Sie die gezeigte Schutzausrüstung nach Übertragungsweg: Kontakt – Tröpfchen – aerogen.</div></div><div class="v"><a href="https://www.krankenhaushygiene.de/videos/2021-Braehmer-Fit-Test-HD.mp4" target="_blank" rel="noopener">„Dr. Brähmer und der Fit Test“ – FFP-Masken richtig tragen ▲ (direkt abspielbar)</a><div class="auftrag">Sehauftrag: Warum reicht „Maske auf“ nicht? Notieren Sie zwei Gründe, warum der Sitz über die Schutzwirkung entscheidet – wichtig für Herrn Demir.</div></div>
+  </div></div>
+  <div class="card">
+    <h2>Quiz Block C</h2>
+    <div id="quiz-C"></div>
+  </div>
+</section>
+
+<!-- ================= BLOCK D ================= -->
+<section class="page" id="page-D">
+  <div class="card">
+    <span class="tag">Block D · 6 Std</span>
+    <h2>Umwelthygiene</h2>
+    <h3>Check-in: Was muss ich können?</h3>
+    <div id="checkin-D"></div>
+  </div>
+  <div class="card">
+    <h2>Wissen kompakt</h2>
+    <h3>Umweltfaktoren und Krankheitsentstehung</h3>
+    <table>
+      <tr><th>Faktor</th><th>Gesundheitsrisiken (Beispiele)</th><th>Physio-Bezug</th></tr>
+      <tr><td><strong>Wetter/Klima</strong></td><td>Hitzebelastung, UV-Strahlung (Hautkrebs), Kreislaufbelastung</td><td>Trainingssteuerung bei Hitze, Schutz bei Außenterminen</td></tr>
+      <tr><td><strong>Luft</strong></td><td>Feinstaub und Schadgase → Atemwegs- und Herz-Kreislauf-Erkrankungen; Innenraum: Schimmelsporen → Allergien, Asthma</td><td>Lüftungsregime im Behandlungsraum, Schimmel melden</td></tr>
+      <tr><td><strong>Boden</strong></td><td>Altlasten, Krankheitserreger (z. B. Tetanussporen in Erde)</td><td>Wundversorgung nach Stürzen im Freien, Impfschutz-Thema</td></tr>
+      <tr><td><strong>Trinkwasser</strong></td><td>Mikrobiologische Verunreinigung; Legionellen in Leitungssystemen → Legionellose (schwere Lungenentzündung durch Aerosole)</td><td>▲ Duschen/Wasseranlagen: Nach TrinkwV müssen Großanlagen zur Trinkwassererwärmung mit Duschen regelmäßig auf Legionellen untersucht werden (technischer Maßnahmenwert 100 KBE/100 ml); selten genutzte Leitungen regelmäßig spülen</td></tr>
+      <tr><td><strong>Badewasser</strong></td><td>Erreger im Becken- und Barfußbereich: Fußpilz, Warzenviren, Pseudomonaden</td><td>Bewegungsbad: Wasseraufbereitung + Barfußzonen-Hygiene + Teilnahmeregeln (Fall Winkler)</td></tr>
+      <tr><td><strong>Abwasser</strong></td><td>Seuchenhygienische Bedeutung der geordneten Entsorgung</td><td>Grundwissen für die Bewertung von Einrichtungen</td></tr>
+    </table>
+    <div class="note"><strong>Fall Winkler aufgelöst:</strong> Chlorung reduziert Erreger im Beckenwasser, macht das Bad aber nicht keimfrei – und die Übertragung von Fußpilz und Warzen läuft vor allem über nasse Barfußflächen und gemeinsame Kontaktflächen. Sichtbare Läsionen: behandeln bzw. wasserdicht abdecken, Badeschuhe, im Zweifel pausieren. „Chlor tötet doch alles" ist ein Fehlkonzept.</div>
+    <h3>Abfallentsorgung im Gesundheitswesen</h3>
+    <p>Rechtsgrundlagen: Kreislaufwirtschaftsgesetz, Gewerbeabfallverordnung, LAGA-Mitteilung 18 (Vollzugshilfe Entsorgung von Abfällen aus Einrichtungen des Gesundheitsdienstes).</p>
+    <table>
+      <tr><th>Abfallart (Alltagssprache)</th><th>Beispiele aus der Physiotherapie</th><th>Entsorgung</th></tr>
+      <tr><td>Kommunaler Restabfall / Wertstoffe</td><td>Papierauflagen ohne sichtbare Kontamination, Verpackungen</td><td>Regulär, getrennt sammeln</td></tr>
+      <tr><td>Abfälle, an deren Sammlung aus infektionspräventiver Sicht Anforderungen gestellt werden (AS 18 01 04)</td><td>Mit Blut/Sekreten behaftete Tupfer, Wundauflagen, Einmalhandschuhe</td><td>Reißfeste, feuchtigkeitsbeständige Beutel; verschlossen entsorgen; kein Umfüllen, kein Pressen</td></tr>
+      <tr><td>▲ Spitze und scharfe Gegenstände (AS 18 01 01)</td><td>Kanülen (z. B. nach ärztlicher Injektion in Kooperationspraxen), Skalpellklingen, Rasierklingen fürs Tapen</td><td>Durchstichsichere, verschließbare Behälter („Sharps-Box") – niemals in Müllsäcke, niemals Schutzkappe zurückstecken (Recapping-Verbot)</td></tr>
+      <tr><td>▲ Infektiöse Abfälle (AS 18 01 03*)</td><td>Abfälle von Patientinnen/Patienten mit bestimmten meldepflichtigen Erkrankungen – in der Physiotherapie selten, in Kliniken relevant</td><td>Gesonderte, gekennzeichnete Behältnisse; Desinfektion/Verbrennung nach Vorgabe</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h2>Lernprodukt Block D: Risiko-Check Bewegungsbad + Abfall-Sortierleitfaden</h2>
+    <p>Teil 1: Erstellen Sie eine Risiko-Checkliste für den Bewegungsbad-Betrieb (Wasser, Flächen, Teilnahmeregeln, Ausschlusskriterien ▲). Teil 2: Erstellen Sie einen Sortierleitfaden „Welcher Abfall wohin?" für eine Physiotherapie-Praxis mit mindestens acht Beispielen.</p>
+    <h3>KI-Werkstatt D: Quellen-Duell</h3>
+    <div class="ki-prompt"><button class="copy" onclick="copyPrompt(this)">Kopieren</button>Welche Infektionsrisiken bestehen in einem Bewegungsbad (Therapiebecken) einer Physiotherapie-Einrichtung, und welche Regeln sollten für Patientinnen und Patienten mit Hauterkrankungen an den Füßen gelten? Nenne zu jeder Aussage die Quelle, auf die du dich stützt.</div>
+    <p><strong>Prüfauftrag:</strong> Prüfen Sie zwei zentrale KI-Aussagen nach: eine gegen eine offizielle Quelle (Umweltbundesamt: Empfehlungen für Schwimm- und Badebeckenwasser; RKI-Ratgeber), eine gegen Ihr Lehrbuch. Notieren Sie: Aussage → Quelle der KI (falls genannt) → Ihre Prüfquelle → Ergebnis (bestätigt / korrigiert / nicht belegbar). Aussagen ohne auffindbare Quelle gelten als <strong>unverifiziert</strong> und kommen nicht ins Lernprodukt.</p>
+    <textarea data-store="ki-D" placeholder="Aussage 1: … KI-Quelle: … Meine Prüfquelle: … Ergebnis: …"></textarea>
+    <div class="savehint">Wird automatisch gespeichert.</div>
+  </div>
+  <div class="card">
+    <h2>Quiz Block D</h2>
+    <div id="quiz-D"></div>
+  </div>
+</section>
+
+<!-- ================= BLOCK E ================= -->
+<section class="page" id="page-E">
+  <div class="card">
+    <span class="tag">Block E · 4 Std</span>
+    <h2>Sozialhygiene und öffentlicher Gesundheitsdienst</h2>
+    <h3>Check-in: Was muss ich können?</h3>
+    <div id="checkin-E"></div>
+  </div>
+  <div class="card">
+    <h2>Wissen kompakt</h2>
+    <h3>Der öffentliche Gesundheitsdienst (ÖGD)</h3>
+    <p>Drei Säulen des Gesundheitswesens: ambulante Versorgung, stationäre Versorgung – und der ÖGD als dritte Säule mit Blick auf die <strong>Bevölkerung</strong> statt auf den Einzelfall. Gliederung: Bundesebene (u. a. Bundesministerium für Gesundheit, RKI), Landesbehörden, und als Zentralstelle vor Ort die <strong>Gesundheitsämter</strong>.</p>
+    <ul>
+      <li>Aufgaben der Gesundheitsämter: Infektionsschutz und Ausbruchsmanagement, Hygieneüberwachung von Einrichtungen (Praxen von Heilberufen, also auch Physiotherapiepraxen, können einbezogen werden, § 23 IfSG), Trink- und Badewasserüberwachung, amtsärztliche Gutachten, Gesundheitsberichterstattung, Gesundheitsförderung, sozialpsychiatrischer Dienst.</li>
+      <li>Für Sie relevant: Das Gesundheitsamt ist Ansprechpartner bei Ausbruchsverdacht (Fall Krüger) und kann auch Praxen infektionshygienisch überwachen.</li>
+    </ul>
+    <h3>Rechtlicher Rahmen – was Sie bindet</h3>
+    <table>
+      <tr><th>Gesetz/Verordnung</th><th>Kernaussage für Ihre Arbeit</th></tr>
+      <tr><td><strong>Infektionsschutzgesetz (IfSG)</strong> ▲</td><td>Zweck: übertragbaren Krankheiten vorbeugen, Infektionen früh erkennen, Weiterverbreitung verhindern. §§ 6/7: Meldepflichten für Krankheiten und Erregernachweise (melden Ärztinnen/Ärzte und Labore – Sie müssen Verdachtsmomente erkennen und im Team weitergeben). § 23: Praxen von Heilberufen (auch Physiotherapiepraxen) müssen Maßnahmen gegen nosokomiale Infektionen nach dem Stand der Wissenschaft treffen und können vom Gesundheitsamt infektionshygienisch überwacht werden. § 36: Pflegeeinrichtungen und Gemeinschaftseinrichtungen (Fall Krüger) müssen Hygienepläne führen und werden vom Gesundheitsamt überwacht.</td></tr>
+      <tr><td><strong>Biostoffverordnung + TRBA 250</strong></td><td>Arbeitsschutz beim Umgang mit biologischen Arbeitsstoffen: Gefährdungsbeurteilung, Schutzstufen, Hygieneplan der Praxis, Impfangebote des Arbeitgebers, Regeln nach Stich-/Schnittverletzungen ▲.</td></tr>
+      <tr><td><strong>Strahlenschutzgesetz (StrlSchG)</strong></td><td>Schutz vor ionisierender Strahlung (Röntgen, Strahlentherapie) – Berührungspunkt: Patientinnen und Patienten im Umfeld von Röntgendiagnostik und Strahlentherapie. UV-Strahlung ist nicht ionisierend und fällt unter das NiSG (Gesetz zum Schutz vor nichtionisierender Strahlung).</td></tr>
+      <tr><td><strong>Arzneimittelgesetz</strong></td><td>Verkehr mit Arzneimitteln – Physiotherapie wendet keine Arzneimittel eigenständig an; Grundverständnis für Teamarbeit.</td></tr>
+      <tr><td><strong>Medizinprodukterecht (MPDG/MPBetreibV)</strong></td><td>Behandlungsgeräte sind Medizinprodukte: Einweisung, Instandhaltung, Aufbereitung nach Herstellerangaben, Medizinproduktebuch für bestimmte Geräte (z. B. Elektrotherapiegeräte).</td></tr>
+    </table>
+    <h3>Umgang mit besonders belasteten Patientengruppen</h3>
+    <div class="warn"><span class="wtitle">▲ HIV/AIDS – Wissen schützt vor Fehlern in beide Richtungen</span><p>HIV wird durch Blut und bestimmte Körperflüssigkeiten übertragen – <strong>nicht</strong> durch normalen Hautkontakt, Anfassen, Schweiß oder gemeinsame Geräte. Für die Physiotherapie gilt: Basishygiene reicht im Normalfall aus; besondere Vorsicht nur bei Blutkontakt (dann Handlungskette wie bei Fall Neumann). Menschen mit HIV unter wirksamer Therapie (Viruslast unter der Nachweisgrenze) übertragen das Virus nicht („n=n: nicht nachweisbar = nicht übertragbar", Deutsche Aidshilfe/RKI); auch das Risiko bei Blutkontakt ist dann sehr gering. Diskriminierende „Sondermaßnahmen" sind fachlich falsch und verletzen die Würde der Patientinnen und Patienten.</p></div>
+    <ul>
+      <li><strong>Berufskrankheiten:</strong> Infektionskrankheiten können bei Beschäftigten im Gesundheitswesen als Berufskrankheit (BK 3101) anerkannt werden – deshalb: jede Exposition dokumentieren (Fall Neumann).</li>
+      <li><strong>Suchtkrankheiten:</strong> erhöhte Infektionsrisiken (z. B. Hepatitis bei i. v. Konsum), oft erschwerter Zugang zur Versorgung – professionelle, nicht wertende Haltung; Schutzmaßnahmen nach Übertragungsweg, nicht nach Vorurteil.</li>
+      <li><strong>Screening und Gesundheitserziehung:</strong> Früherkennungsprogramme und Aufklärung als Werkzeuge der Prävention – Physiotherapeutinnen und Physiotherapeuten sind Multiplikatoren für Gesundheitswissen.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h2>Lernprodukt Block E: Handlungsleitfaden + Synthese</h2>
+    <p>Erstellen Sie einen einseitigen Handlungsleitfaden: „Ausbruchsverdacht in einer Einrichtung – was tue ich als Physiotherapeut:in?" (Erkennen → Schützen → Informieren → Dokumentieren; mit ▲-Markierungen und Rechtsgrundlagen). Schließen Sie mit der Synthese: Verbinden Sie Ihre Concept-Map aus Block A mit Infektionskette, Hygieneplan und Rechtsrahmen zu einem Gesamtbild des Lerngebiets.</p>
+    <h3>KI-Werkstatt E: Gesetzestext schlägt KI</h3>
+    <div class="ki-prompt"><button class="copy" onclick="copyPrompt(this)">Kopieren</button>Welche Pflichten ergeben sich aus dem deutschen Infektionsschutzgesetz für eine Physiotherapie-Praxis und ihre Mitarbeitenden? Nenne die einschlägigen Paragrafen.</div>
+    <p><strong>Prüfauftrag:</strong> Prüfen Sie die von der KI genannten Paragrafen im Originaltext auf gesetze-im-internet.de. Mindestens eine Angabe ist erfahrungsgemäß ungenau oder erfunden (falsche Paragrafennummer, überdehnte Pflicht). Dokumentieren Sie: KI-Angabe → Original-Paragraf → stimmt / stimmt nicht → Konsequenz für Ihren Leitfaden.</p>
+    <textarea data-store="ki-E" placeholder="KI-Angabe: … Original (§ …): … Bewertung: …"></textarea>
+    <div class="savehint">Wird automatisch gespeichert.</div>
+    <div class="fall"><span class="fname">Fallaufgabe – Herr Krüger (82), Fortsetzung:</span> Die Wohnbereichsleitung sagt: „Skabies? Bei unserer Hygiene ausgeschlossen." Formulieren Sie in drei bis fünf Sätzen, wie Sie fachlich korrekt und respektvoll antworten – mit Übertragungsweg, nötigen Sofortmaßnahmen und der Rolle des Gesundheitsamts (§ 36 IfSG). Diese Antwort ist Ihre Vorbereitung auf das Rollenspiel.</div>
+    <textarea data-store="fall-E" placeholder="Meine Antwort an die Wohnbereichsleitung: …"></textarea>
+    <div class="savehint">Wird automatisch gespeichert.</div>
+  </div>
+  <div class="card"><div class="videobox">
+    <h3>🎬 Lernvideos (DGKH – Deutsche Gesellschaft für Krankenhaushygiene)</h3>
+    <div class="v"><a href="https://www.krankenhaushygiene.de/videos/2016_braehmer_der_ausbruch_hd.mp4" target="_blank" rel="noopener">„Sei kein Brähmer – Der Ausbruch“ (direkt abspielbar)</a><div class="auftrag">Sehauftrag: Vergleichen Sie das Ausbruchsmanagement im Video mit Ihrem Handlungsleitfaden (Erkennen → Schützen → Informieren → Dokumentieren): Was fehlt im Video?</div></div>
+  </div></div>
+  <div class="card">
+    <h2>Quiz Block E</h2>
+    <div id="quiz-E"></div>
+  </div>
+</section>
+
+<!-- ================= LERNNACHWEIS ================= -->
+<section class="page" id="page-nachweis">
+  <div class="card">
+    <span class="tag gold">Lernnachweis</span>
+    <h2>Mein Lernstand</h2>
+    <p>Diese Übersicht fasst zusammen, was Sie auf diesem Gerät bearbeitet haben. Sie ersetzt keine Bewertung, macht aber Ihren Lernweg sichtbar. Für die Abgabe erstellen Sie den <strong>Nachweis</strong>: eine Seite mit Name, Klasse und Ihrem Bearbeitungsstand zum Ausdrucken oder als PDF.</p>
+    <button class="btn gold" onclick="openNachweis()">Nachweis erstellen (1 Seite)</button>
+    <button class="btn ghost" onclick="resetAll()">Alles zurücksetzen</button>
+    <div id="nachweis"></div>
+  </div>
+</section>
+
+</main>
+<div class="footer-note">Hygiene/Allgemeine Infektionslehre · RRL 2.4.8 Berufsfachschule Physiotherapie Sachsen-Anhalt · Schülermaterial (KI-Weg) · Version 2 (10/2026) · Fachliche Grundlagen: KRINKO/RKI, WHO, IfSG, TRBA 250, AWMF</div>
+
+<!-- ================= NACHWEIS-OVERLAY (Druckversion, 1 Seite) ================= -->
+<div class="nachweis-overlay" id="nachweisOverlay">
+  <div class="nachweis-sheet">
+    <div class="nachweis-toolbar">
+      <span>Fortschritts-Nachweis</span>
+      <div class="nachweis-toolbar-btns">
+        <button class="nachweis-btn print" onclick="window.print()">Drucken / als PDF speichern</button>
+        <button class="nachweis-btn close" onclick="closeNachweis()">Schließen</button>
+      </div>
+    </div>
+    <div class="nachweis-body">
+      <div class="nachweis-head">
+        <div class="nachweis-eyebrow">Hygiene &amp; Allgemeine Infektionslehre · Physiotherapie 1. Ausbildungsjahr · RRL 2.4.8</div>
+        <h3>Nachweis über die <em>Bearbeitung</em></h3>
+        <div class="nachweis-namerow">
+          <div class="nachweis-namefield">
+            <label for="nachweisName">Name</label>
+            <input type="text" id="nachweisName" placeholder="Vor- und Nachname eintragen" autocomplete="off">
+          </div>
+          <div class="nachweis-namefield">
+            <label for="nachweisKlasse">Klasse / Kurs</label>
+            <input type="text" id="nachweisKlasse" placeholder="z. B. PT 1a" autocomplete="off">
+          </div>
+        </div>
+      </div>
+
+      <div class="nachweis-summary">
+        <div class="nachweis-stat"><div class="nachweis-stat-val" id="nwBlocks">0 / 5</div><div class="nachweis-stat-lbl">Blöcke vollständig bearbeitet</div></div>
+        <div class="nachweis-stat"><div class="nachweis-stat-val" id="nwChecks">0 %</div><div class="nachweis-stat-lbl">Check-ins abgehakt</div></div>
+        <div class="nachweis-stat"><div class="nachweis-stat-val" id="nwQuiz">0 %</div><div class="nachweis-stat-lbl">Quizfragen richtig</div></div>
+      </div>
+
+      <table class="nachweis-table">
+        <thead>
+          <tr>
+            <th>Block</th>
+            <th class="center">Check-in</th>
+            <th class="center">Quiz</th>
+            <th class="center">Schriftliche Aufgaben</th>
+            <th class="center">Vollständig</th>
+          </tr>
+        </thead>
+        <tbody id="nachweisRows"></tbody>
+      </table>
+
+      <div class="nachweis-foot">
+        Dieser Nachweis wurde automatisch aus dem auf diesem Gerät gespeicherten Lernfortschritt erzeugt. Erstellt am <span id="nachweisDatum"></span>. Er dokumentiert die Bearbeitung der interaktiven Elemente der Lernwebsite (KI-Weg) und ersetzt keine Bewertung. „Vollständig“ bedeutet: alle Check-ins abgehakt, alle Quizfragen beantwortet und alle schriftlichen Aufgaben des Blocks ausgefüllt.
+        <div class="nachweis-sign">
+          <div class="nachweis-sign-field"><div class="nachweis-sign-line"></div><div class="nachweis-sign-lbl">Datum, Unterschrift Schüler:in</div></div>
+          <div class="nachweis-sign-field"><div class="nachweis-sign-line"></div><div class="nachweis-sign-lbl">Kenntnis genommen, Lehrkraft</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---------- Daten ----------
+const CHECKINS = {
+  A: ["Ich kann erklären, was der Fall Semmelweis über die Wirkung von Hygiene zeigt.",
+      "Ich kann die drei Hygienefelder nennen und voneinander abgrenzen.",
+      "Ich kann zu jedem Hygienefeld mindestens drei Beispiele aus der Physiotherapie nennen.",
+      "Ich kann begründen, warum Hygiene in der Physiotherapie besonders wichtig ist."],
+  B: ["Ich kann die fünf Erregergruppen mit je einem Beispiel und einer Nachweismöglichkeit nennen.",
+      "Ich kann die sechs Glieder der Infektionskette erklären und Unterbrechungsmöglichkeiten zuordnen.",
+      "Ich kann Kolonisation, Infektion und Erkrankung unterscheiden (Beispiel MRSA).",
+      "Ich kann Kardinalsymptome einer Infektion nennen und weiß, wann Behandlung kontraindiziert ist. ▲",
+      "Ich kann endemisch, Ausbruch, Epidemie und Pandemie korrekt unterscheiden."],
+  C: ["Ich kann Reinigung, Desinfektion und Sterilisation unterscheiden und je einen Einsatz nennen.",
+      "Ich kann die hygienische Händedesinfektion vollständig und richtig durchführen. ▲",
+      "Ich kann die 5 Momente der Händedesinfektion auf eine Physio-Behandlung übertragen. ▲",
+      "Ich kann einen Hygieneplan für einen Behandlungsraum erstellen und begründen.",
+      "Ich kann die Handlungskette nach Stich-/Schnittverletzung fehlerfrei wiedergeben. ▲",
+      "Ich kann erklären, welche Schutzmaßnahmen bei Frau Kowalski (MRSA) nötig sind – und welche nicht."],
+  D: ["Ich kann an Beispielen erklären, wie Umweltfaktoren Krankheiten auslösen.",
+      "Ich kann die Risiken im Bewegungsbad erklären und Teilnahmeregeln ableiten. ▲",
+      "Ich kann erklären, warum Legionellen in Wasserleitungen gefährlich sind. ▲",
+      "Ich kann Abfälle einer Physiotherapie-Praxis den richtigen Entsorgungswegen zuordnen.",
+      "Ich weiß, warum spitze Gegenstände nie in den normalen Müll dürfen. ▲"],
+  E: ["Ich kann Aufbau und Aufgaben des öffentlichen Gesundheitsdienstes beschreiben.",
+      "Ich kann Zweck und Kernpflichten des Infektionsschutzgesetzes erklären. ▲",
+      "Ich weiß, was bei einem Ausbruchsverdacht in einer Einrichtung zu tun ist. ▲",
+      "Ich kann erklären, wie HIV übertragen wird – und wie nicht – und was das für die Behandlung bedeutet. ▲",
+      "Ich kann das Lerngebiet zu einem Gesamtbild verbinden (Synthese)."]
+};
+
+const QUIZ = {
+  A: [
+    {q:"Semmelweis senkte die Müttersterblichkeit durch …", o:["strengere Auswahl der Studenten","Händedesinfektion mit Chlorkalk","bessere Belüftung der Säle","frühere Entlassung der Mütter"], c:1, why:"Die Chlorkalk-Waschung unterbrach den Übertragungsweg von Leichenmaterial zu den Gebärenden – Jahrzehnte bevor Bakterien als Krankheitserreger nachgewiesen wurden."},
+    {q:"„Tägliches Duschen und saubere private Kleidung“ gehört zu welchem Hygienefeld?", o:["Arbeitsplatzhygiene","allgemeine Hygiene","persönliche Hygiene","Sozialhygiene"], c:2, why:"Körperpflege und Bekleidung sind persönliche Hygiene – sie gelten unabhängig vom Beruf."},
+    {q:"Die Kontrolle der Wasserqualität im Therapiebecken gehört zur …", o:["allgemeinen Hygiene","persönlichen Hygiene","Ernährungshygiene","psychischen Hygiene"], c:0, why:"Wasser, Luft, Boden und Abfall sind Gegenstand der allgemeinen (Umwelt-)Hygiene."},
+    {q:"Warum ist Händehygiene in der Physiotherapie besonders kritisch?", o:["weil Physiotherapeuten mehr schwitzen","wegen des langen, direkten Hautkontakts mit wechselnden Patienten","weil Desinfektionsmittel in Praxen fehlen","weil Patienten es erwarten"], c:1, why:"Viel direkter Hautkontakt mit wechselnden Personen macht die Hände zum Übertragungsweg Nummer eins."}
+  ],
+  B: [
+    {q:"Welche Aussage über Viren ist richtig?", o:["Sie haben einen eigenen Stoffwechsel.","Antibiotika wirken zuverlässig gegen sie.","Sie vermehren sich nur in Wirtszellen.","Sie sind eine Unterart der Bakterien."], c:2, why:"Viren besitzen keinen eigenen Stoffwechsel und brauchen Wirtszellen – deshalb sind Antibiotika wirkungslos."},
+    {q:"MRSA ist …", o:["ein multiresistentes Bakterium (Staphylococcus aureus)","ein Virus","ein Pilz","ein Makroparasit"], c:0, why:"MRSA = Methicillin-resistenter Staphylococcus aureus, ein Bakterium mit Antibiotikaresistenzen."},
+    {q:"Frau Kowalski trägt MRSA in der Nase, ist aber gesund. Das nennt man …", o:["Infektion","Erkrankung","Kolonisation","Kontamination der Umgebung"], c:2, why:"Besiedelung ohne Krankheitszeichen = Kolonisation. Behandlung ist mit Basishygiene plus gezielten Maßnahmen möglich."},
+    {q:"Der wichtigste Übertragungsweg für Erreger im Gesundheitswesen ist …", o:["die Luft über große Entfernung","der Kontakt über die Hände","Insektenstiche","Trinkwasser"], c:1, why:"Kontakt-/Schmierinfektion über die Hände dominiert – deshalb ist Händedesinfektion die wichtigste Einzelmaßnahme. ▲"},
+    {q:"Zwölf Bewohnerinnen und Bewohner eines Pflegeheims erkranken innerhalb von drei Tagen an Norovirus. Das ist ein Beispiel für …", o:["eine Pandemie","eine Endemie","einen Ausbruch","eine Zoonose"], c:2, why:"Eine Häufung in einer einzelnen Einrichtung ist ein Ausbruch und nach § 6 IfSG dem Gesundheitsamt zu melden. Epidemie meint eine zeitlich und örtlich begrenzte Häufung in der Bevölkerung, z. B. eine regionale Grippewelle."},
+    {q:"▲ Ihr Patient hat heute 38,9 °C Fieber und Gliederschmerzen. Die geplante Trainingstherapie …", o:["wird normal durchgeführt","wird intensiviert, um die Abwehr zu stärken","entfällt – akuter Infekt ist eine Kontraindikation","wird nur verkürzt"], c:2, why:"Akuter Infekt mit Fieber: keine belastende Therapie – Rücksprache und neuer Termin."}
+  ],
+  C: [
+    {q:"Desinfektion bedeutet …", o:["Beseitigung aller Mikroorganismen einschließlich Sporen","Reduktion der Erreger auf ein nicht mehr infektiöses Maß","Entfernung von sichtbarem Schmutz","dasselbe wie Sterilisation"], c:1, why:"Sterilisation beseitigt alles inklusive Sporen; im Physio-Alltag ist Desinfektion der Standard."},
+    {q:"▲ Die hygienische Händedesinfektion dauert …", o:["5–10 Sekunden","mindestens 30 Sekunden (nach Herstellerangabe), Hände bleiben feucht","mindestens 3 Minuten","solange wie das Händewaschen"], c:1, why:"KRINKO 2016: Einwirkzeit nach Herstellerangabe, in der Regel mindestens 30 Sekunden, alle Bereiche benetzt."},
+    {q:"▲ Wann desinfizieren Sie sich nach den 5 Momenten die Hände? Wählen Sie die vollständigste Antwort.", o:["nur nach der Behandlung","vor Patientenkontakt, vor aseptischen Tätigkeiten, nach Kontakt mit infektiösem Material, nach Patientenkontakt, nach Kontakt mit der Patientenumgebung","vor und nach der Schicht","immer wenn die Hände sichtbar schmutzig sind"], c:1, why:"Genau das sind die 5 Momente der WHO – konsequent vom Patientenschutz her gedacht."},
+    {q:"Sie haben Handschuhe getragen. Was gilt?", o:["Händedesinfektion ist nicht mehr nötig","Nach dem Ausziehen wird desinfiziert","Handschuhe dürfen für den nächsten Patienten bleiben","Waschen ersetzt das Desinfizieren"], c:1, why:"Handschuhe ersetzen die Händedesinfektion nicht: Perforationen und Kontamination beim Ausziehen sind häufig."},
+    {q:"▲ Frau Neumann hat sich verletzt und hatte Blutkontakt (Patient mit Hepatitis B). Erster richtiger Schritt-Dreiklang?", o:["Pflaster, weiterarbeiten, nach der Schicht melden","Wunde versorgen, D-Arzt unverzüglich, Arbeitsunfall dokumentieren","abwarten, ob Symptome kommen","nur den Impfpass suchen"], c:1, why:"Blutkontakt-Ereignisse sind Arbeitsunfälle mit klarer Handlungskette – Zeit zählt (ggf. Postexpositionsprophylaxe)."},
+    {q:"▲ Bei welchem Erreger reicht die alkoholische Händedesinfektion allein NICHT aus?", o:["Influenzavirus","Staphylococcus aureus","Clostridioides difficile (Sporen)","Streptokokken"], c:2, why:"Sporen von C. difficile sind alkoholresistent: Handschuhe tragen, nach der Desinfektion zusätzlich die Hände waschen. Bei Noroviren bleibt die Desinfektion die Maßnahme, aber mit einem mindestens „begrenzt viruzid PLUS\" wirksamen Mittel."},
+    {q:"Herr Demir (Neutropenie) hat einen Termin, Sie haben leichten Schnupfen. Was ist richtig? ▲", o:["Behandlung mit Mund-Nasen-Schutz auf eigene Verantwortung durchführen","Behandlung durchführen, aber kürzer","Nicht behandeln – Vertretung organisieren, der Patient wird vor Ihnen geschützt","Den Patienten fragen, ob es ihm recht ist"], c:2, why:"Bei protektiver Isolation ist ein eigener Infekt ein Behandlungsausschluss – Patientenschutz geht vor."}
+  ],
+  D: [
+    {q:"Legionellen werden gefährlich vor allem durch …", o:["Trinken von kaltem Wasser","Einatmen erregerhaltiger Aerosole (z. B. beim Duschen)","Hautkontakt im Schwimmbecken","Händeschütteln"], c:1, why:"Legionellose entsteht durch Einatmen erregerhaltiger Aerosole, nicht durch Trinken. Deshalb schreibt die TrinkwV für Großanlagen mit Duschen regelmäßige Legionellenuntersuchungen vor (technischer Maßnahmenwert 100 KBE/100 ml). ▲"},
+    {q:"Herr Winkler sagt: „Das Chlor tötet doch alles.“ Fachlich richtig ist:", o:["Er hat recht, Chlorwasser ist steril","Chlor reduziert Erreger, aber Übertragung läuft v. a. über nasse Barfußflächen und Kontaktflächen","Fußpilz ist im Wasser nicht übertragbar, also egal","Nur die Wassertemperatur entscheidet"], c:1, why:"Beckenwasser ist nicht keimfrei, und Pilze/Warzenviren verbreiten sich vor allem über Barfußbereiche – daher Regeln und Badeschuhe."},
+    {q:"▲ Eine benutzte Rasierklinge (Tape-Vorbereitung) gehört …", o:["in den Restmüll","in den gelben Sack","in einen durchstichsicheren Behälter","in den Papierkorb, wenn sie eingewickelt ist"], c:2, why:"Spitze/scharfe Gegenstände immer in die Sharps-Box – Verletzungs- und Infektionsschutz (TRBA 250, LAGA 18)."},
+    {q:"Mit Wundsekret benetzte Einmalhandschuhe entsorgen Sie …", o:["im normalen Papierkorb des Wartezimmers","im verschlossenen, reißfesten Beutel über den dafür vorgesehenen Abfallweg (AS 18 01 04)","in der Toilette","als Wertstoff"], c:1, why:"Abfälle mit Sekret-/Blutbehaftung werden verschlossen und ohne Umfüllen entsorgt."},
+    {q:"Schimmelbefall im Behandlungsraum ist relevant, weil …", o:["er nur unschön aussieht","Sporen Allergien und Atemwegserkrankungen auslösen können","er das Desinfektionsmittel unwirksam macht","er nur im Sommer wächst"], c:1, why:"Schimmelsporen in der Innenraumluft sind ein Gesundheitsrisiko – melden und sanieren lassen."}
+  ],
+  E: [
+    {q:"Die Zentralstelle des öffentlichen Gesundheitsdienstes vor Ort ist …", o:["das Robert Koch-Institut","die Krankenkasse","das Gesundheitsamt","die Ärztekammer"], c:2, why:"Gesundheitsämter übernehmen Infektionsschutz, Hygieneüberwachung, Begutachtung und Prävention vor Ort."},
+    {q:"▲ Das Infektionsschutzgesetz verpflichtet Einrichtungen u. a. zu …", o:["kostenlosen Behandlungen","Hygieneplänen in Pflege- und Gemeinschaftseinrichtungen (§ 36) und Infektionsschutzmaßnahmen in Praxen (§ 23)","täglicher Meldung aller Patienten","Impfpflicht für alle Patienten"], c:1, why:"§ 36 IfSG: Hygienepläne und Überwachung in Pflege- und Gemeinschaftseinrichtungen; § 23: Infektionsschutz in Praxen, Überwachung durch das Gesundheitsamt möglich. Meldepflichten nach §§ 6/7 laufen über Ärzte und Labore."},
+    {q:"▲ Beim Skabies-Verdacht in der Einrichtung (Fall Krüger) ist der richtige Weg:", o:["normal weiterbehandeln, um niemanden zu beunruhigen","Kontaktschutz, Information an Einrichtung/Hygieneverantwortliche, ärztliche Abklärung, ggf. Gesundheitsamt","sofort alle Bewohner isolieren, ohne jemanden zu informieren","nur die eigene Behandlung absagen und nichts sagen"], c:1, why:"Erkennen → Schützen → Informieren → Dokumentieren; Ausbruchsmanagement läuft mit der Einrichtung und dem Gesundheitsamt."},
+    {q:"▲ HIV wird übertragen durch …", o:["Händeschütteln und gemeinsame Trainingsgeräte","Blut und bestimmte Körperflüssigkeiten – nicht durch normalen Hautkontakt","Schweiß bei der Massage","Tröpfchen beim Sprechen"], c:1, why:"Für die Physiotherapie reicht Basishygiene; Sondermaßnahmen aus Angst sind fachlich falsch und diskriminierend."},
+    {q:"Eine Infektionskrankheit, die sich ein Physiotherapeut nachweislich im Beruf zugezogen hat, kann anerkannt werden als …", o:["Privatsache","Berufskrankheit (BK 3101)","Kavaliersdelikt","Behandlungsfehler"], c:1, why:"Deshalb ist die Dokumentation jeder Exposition (Fall Neumann) so wichtig."}
+  ]
+};
+
+const BLOCKS = ["A","B","C","D","E"];
+const NAMES = {start:"Start", A:"Block A", B:"Block B", C:"Block C", D:"Block D", E:"Block E", nachweis:"Lernnachweis"};
+
+// ---------- Storage ----------
+const KEY = "hygiene_lg8_v1";
+let state = {};
+try { state = JSON.parse(localStorage.getItem(KEY)) || {}; } catch(e){ state = {}; }
+function save(){ localStorage.setItem(KEY, JSON.stringify(state)); updateProgress(); }
+
+// ---------- Nav ----------
+const navEl = document.getElementById("nav");
+["start"].concat(BLOCKS).concat(["nachweis"]).forEach(id => {
+  const b = document.createElement("button");
+  b.id = "nav-" + id;
+  b.textContent = NAMES[id];
+  b.onclick = () => show(id);
+  navEl.appendChild(b);
+});
+function show(id){
+  document.querySelectorAll("section.page").forEach(s => s.classList.remove("visible"));
+  document.getElementById("page-" + id).classList.add("visible");
+  document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
+  document.getElementById("nav-" + id).classList.add("active");
+  if(id === "nachweis") renderNachweis();
+  window.scrollTo({top:0});
+  state.lastPage = id; save();
+}
+
+// ---------- Check-ins ----------
+BLOCKS.forEach(bl => {
+  const host = document.getElementById("checkin-" + bl);
+  CHECKINS[bl].forEach((txt, i) => {
+    const key = "ck-" + bl + "-" + i;
+    const label = document.createElement("label");
+    label.className = "check" + (state[key] ? " checked" : "");
+    const cb = document.createElement("input");
+    cb.type = "checkbox"; cb.checked = !!state[key];
+    cb.onchange = () => { state[key] = cb.checked; label.classList.toggle("checked", cb.checked); save(); };
+    const span = document.createElement("span");
+    span.textContent = txt;
+    label.appendChild(cb); label.appendChild(span);
+    host.appendChild(label);
+  });
+});
+
+// ---------- Quizzes ----------
+BLOCKS.forEach(bl => {
+  const host = document.getElementById("quiz-" + bl);
+  QUIZ[bl].forEach((item, qi) => {
+    const wrap = document.createElement("div");
+    wrap.className = "quiz-q";
+    const qt = document.createElement("div"); qt.className = "qtext";
+    qt.textContent = (qi+1) + ". " + item.q; wrap.appendChild(qt);
+    const fb = document.createElement("div"); fb.className = "feedback";
+    const key = "qz-" + bl + "-" + qi;
+    item.o.forEach((opt, oi) => {
+      const btn = document.createElement("button");
+      btn.className = "opt"; btn.textContent = opt;
+      btn.onclick = () => {
+        wrap.querySelectorAll(".opt").forEach((b, bi) => {
+          b.disabled = true;
+          if(bi === item.c) b.classList.add("correct");
+        });
+        if(oi !== item.c) btn.classList.add("wrong");
+        fb.classList.add("show", oi === item.c ? "ok" : "no");
+        fb.textContent = (oi === item.c ? "Richtig. " : "Nicht ganz. ") + item.why;
+        state[key] = (oi === item.c); save();
+        renderScore(bl);
+      };
+      wrap.appendChild(btn);
+    });
+    wrap.appendChild(fb);
+    host.appendChild(wrap);
+    // restore answered state
+    if(state[key] !== undefined){
+      wrap.querySelectorAll(".opt").forEach((b, bi) => {
+        b.disabled = true;
+        if(bi === item.c) b.classList.add("correct");
+      });
+      fb.classList.add("show", state[key] ? "ok" : "no");
+      fb.textContent = (state[key] ? "Richtig. " : "Beim letzten Versuch nicht richtig. ") + item.why;
+    }
+  });
+  const sc = document.createElement("div"); sc.className = "score"; sc.id = "score-" + bl;
+  host.appendChild(sc);
+  const rst = document.createElement("button"); rst.className = "btn ghost"; rst.textContent = "Quiz " + bl + " zurücksetzen";
+  rst.onclick = () => {
+    QUIZ[bl].forEach((_, qi) => delete state["qz-" + bl + "-" + qi]);
+    save(); location.reload();
+  };
+  host.appendChild(rst);
+  renderScore(bl);
+});
+function quizStats(bl){
+  let answered = 0, right = 0;
+  QUIZ[bl].forEach((_, qi) => {
+    const v = state["qz-" + bl + "-" + qi];
+    if(v !== undefined){ answered++; if(v) right++; }
+  });
+  return {answered, right, total: QUIZ[bl].length};
+}
+function renderScore(bl){
+  const s = quizStats(bl);
+  document.getElementById("score-" + bl).textContent =
+    s.answered === 0 ? "" : "Stand: " + s.right + " von " + s.total + " richtig (" + s.answered + " beantwortet)";
+}
+
+// ---------- Textareas ----------
+document.querySelectorAll("textarea[data-store]").forEach(ta => {
+  const key = "tx-" + ta.dataset.store;
+  ta.value = state[key] || "";
+  ta.addEventListener("input", () => { state[key] = ta.value; save(); });
+});
+
+// ---------- Progress ----------
+function updateProgress(){
+  let done = 0, total = 0;
+  BLOCKS.forEach(bl => {
+    CHECKINS[bl].forEach((_, i) => { total++; if(state["ck-" + bl + "-" + i]) done++; });
+    QUIZ[bl].forEach((_, qi) => { total++; if(state["qz-" + bl + "-" + qi] === true) done++; });
+  });
+  const pct = total ? Math.round(done/total*100) : 0;
+  document.getElementById("pbar").style.width = pct + "%";
+  document.getElementById("plabel").textContent = "Fortschritt: " + pct + " % (Check-ins und richtig gelöste Quizfragen)";
+  BLOCKS.forEach(bl => {
+    const s = quizStats(bl);
+    const ck = CHECKINS[bl].filter((_, i) => state["ck-" + bl + "-" + i]).length;
+    const el = document.getElementById("nav-" + bl);
+    if(el) el.innerHTML = NAMES[bl] + " <span class='done'>" + (ck + s.right) + "/" + (CHECKINS[bl].length + s.total) + "</span>";
+  });
+}
+
+// ---------- Lernnachweis ----------
+function renderNachweis(){
+  const host = document.getElementById("nachweis");
+  let html = "<table><tr><th>Block</th><th>Check-in (Ich kann …)</th><th>Quiz</th><th>Schriftliche Aufgaben</th></tr>";
+  BLOCKS.forEach(bl => {
+    const st = blockStatus(bl);
+    const s = st.q;
+    html += "<tr><td><strong>" + NAMES[bl] + "</strong></td><td>" + st.ckDone + " von " + st.ckTotal + " abgehakt</td><td>" +
+      (s.answered ? s.right + " von " + s.total + " richtig" : "noch nicht bearbeitet") + "</td><td>" + st.txDone + " von " + st.txTotal + " ausgefüllt</td></tr>";
+  });
+  html += "</table>";
+  const texts = [
+    ["fall-B","Infektionsketten-Analyse Herr Krüger (Block B)"],
+    ["ki-B","Fehlerhafter KI-Text – meine Korrekturen (Block B)"],
+    ["fall-C","Entscheidung Fall Kowalski (Block C)"],
+    ["ki-D","Quellen-Duell (Block D)"],
+    ["ki-E","Gesetzes-Check (Block E)"],
+    ["fall-E","Antwort an die Wohnbereichsleitung (Block E)"],
+    ["notes-A","Notizen Block A"]
+  ];
+  texts.forEach(([k, title]) => {
+    const v = state["tx-" + k];
+    if(v && v.trim()){
+      html += "<h3>" + title + "</h3><p style='white-space:pre-wrap;background:#fbfaf5;border:1px solid #e5dfc9;border-radius:6px;padding:10px'>" +
+        v.replace(/</g,"&lt;") + "</p>";
+    }
+  });
+  host.innerHTML = html;
+}
+
+// ---------- Nachweis (Druckversion, 1 Seite) ----------
+const BLOCK_TITLES = {
+  A:"Warum Hygiene? Die Hygienefelder",
+  B:"Erreger, Infektionskette, Epidemiologie",
+  C:"Hygiene am Arbeitsplatz Physiotherapie",
+  D:"Umwelthygiene",
+  E:"Sozialhygiene und ÖGD"
+};
+const BLOCK_TEXTS = { A:["notes-A"], B:["fall-B","ki-B"], C:["fall-C"], D:["ki-D"], E:["ki-E","fall-E"] };
+
+function blockStatus(bl){
+  const ckTotal = CHECKINS[bl].length;
+  const ckDone = CHECKINS[bl].filter((_, i) => state["ck-" + bl + "-" + i]).length;
+  const q = quizStats(bl);
+  const txTotal = BLOCK_TEXTS[bl].length;
+  const txDone = BLOCK_TEXTS[bl].filter(k => (state["tx-" + k] || "").trim().length > 0).length;
+  const complete = ckDone === ckTotal && q.answered === q.total && txDone === txTotal;
+  return {ckDone, ckTotal, q, txDone, txTotal, complete};
+}
+
+function fillNachweis(){
+  let blocksDone = 0, ckDoneAll = 0, ckTotalAll = 0, qRightAll = 0, qTotalAll = 0;
+  const tbody = document.getElementById("nachweisRows");
+  tbody.innerHTML = "";
+  BLOCKS.forEach(bl => {
+    const st = blockStatus(bl);
+    if(st.complete) blocksDone++;
+    ckDoneAll += st.ckDone; ckTotalAll += st.ckTotal;
+    qRightAll += st.q.right; qTotalAll += st.q.total;
+    const tr = document.createElement("tr");
+    const ckOk = st.ckDone === st.ckTotal;
+    const qOk = st.q.answered === st.q.total;
+    const txOk = st.txDone === st.txTotal;
+    tr.innerHTML =
+      "<td class='unit-cell'>Block " + bl + "<small>" + BLOCK_TITLES[bl] + "</small></td>" +
+      "<td class='center'>" + st.ckDone + " / " + st.ckTotal + (ckOk ? " <span class='nachweis-check yes'>✓</span>" : "") + "</td>" +
+      "<td class='center'>" + st.q.right + " / " + st.q.total + " richtig" + (qOk ? " <span class='nachweis-check yes'>✓</span>" : " <small>(" + st.q.answered + " beantwortet)</small>") + "</td>" +
+      "<td class='center'>" + st.txDone + " / " + st.txTotal + (txOk ? " <span class='nachweis-check yes'>✓</span>" : "") + "</td>" +
+      "<td class='center'><span class='nachweis-check " + (st.complete ? "yes" : "no") + "'>" + (st.complete ? "✓" : "–") + "</span></td>";
+    tbody.appendChild(tr);
+  });
+  document.getElementById("nwBlocks").textContent = blocksDone + " / " + BLOCKS.length;
+  document.getElementById("nwChecks").textContent = (ckTotalAll ? Math.round(ckDoneAll / ckTotalAll * 100) : 0) + " %";
+  document.getElementById("nwQuiz").textContent = (qTotalAll ? Math.round(qRightAll / qTotalAll * 100) : 0) + " %";
+  const now = new Date();
+  document.getElementById("nachweisDatum").textContent =
+    now.toLocaleDateString("de-DE", {day:"2-digit", month:"2-digit", year:"numeric"}) + ", " +
+    now.toLocaleTimeString("de-DE", {hour:"2-digit", minute:"2-digit"}) + " Uhr";
+  document.getElementById("nachweisName").value = state.name || "";
+  document.getElementById("nachweisKlasse").value = state.klasse || "";
+}
+function openNachweis(){
+  fillNachweis();
+  document.getElementById("nachweisOverlay").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+function closeNachweis(){
+  document.getElementById("nachweisOverlay").classList.remove("open");
+  document.body.style.overflow = "";
+}
+document.getElementById("nachweisName").addEventListener("input", e => { state.name = e.target.value; save(); });
+document.getElementById("nachweisKlasse").addEventListener("input", e => { state.klasse = e.target.value; save(); });
+document.getElementById("nachweisOverlay").addEventListener("click", e => { if(e.target.id === "nachweisOverlay") closeNachweis(); });
+document.addEventListener("keydown", e => { if(e.key === "Escape") closeNachweis(); });
+// Beim Drucken (auch über Strg+P) immer den aktuellen Stand verwenden
+window.addEventListener("beforeprint", () => { fillNachweis(); if(document.activeElement) document.activeElement.blur(); });
+
+// ---------- Utils ----------
+function copyPrompt(btn){
+  const text = btn.parentElement.textContent.replace("Kopieren","").trim();
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = "Kopiert ✓";
+    setTimeout(() => btn.textContent = "Kopieren", 1500);
+  });
+}
+function resetAll(){
+  if(confirm("Wirklich alle gespeicherten Fortschritte auf diesem Gerät löschen?")){
+    localStorage.removeItem(KEY); location.reload();
+  }
+}
+
+// ---------- Init ----------
+updateProgress();
+show(state.lastPage && document.getElementById("page-" + state.lastPage) ? state.lastPage : "start");
+</script>
+</body>
+</html>
